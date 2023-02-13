@@ -6,8 +6,15 @@ import "./App.css";
 const App = () => {
   const [inputValue, setInputValue] = useState("");
 
-  const handleSearch = () => {
-    console.log(inputValue);
+  const handleSearchClick = async () => {
+    const response = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${inputValue}`,
+      {
+        method: "GET",
+      }
+    );
+
+    console.log(await response.json());
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +30,7 @@ const App = () => {
             <IconSearch
               size={18}
               style={{ display: "block", opacity: 0.5 }}
-              onClick={handleSearch}
+              onClick={handleSearchClick}
               cursor="pointer"
             />
           </div>
