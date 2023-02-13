@@ -14,7 +14,11 @@ const App = () => {
       }
     );
 
-    console.log(await response.json());
+    const books = await response.json();
+
+    console.log(
+      `${books.items[0].volumeInfo["title"]} by ${books.items[0].volumeInfo["authors"][0]}`
+    );
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
