@@ -2,9 +2,11 @@ import { Button, Input } from "@mantine/core";
 import { useState } from "react";
 import { IconSearch } from "@tabler/icons-react";
 import "./App.css";
+import SearchResult from "./components/SearchResult";
 
-const App = () => {
+function App() {
   const [inputValue, setInputValue] = useState("");
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const handleSearchClick = async () => {
     const response = await fetch(
@@ -16,13 +18,19 @@ const App = () => {
 
     const books = await response.json();
 
-    console.log(
-      `${books.items[0].volumeInfo["title"]} by ${books.items[0].volumeInfo["authors"][0]}`
-    );
+    console.log(books.items[0]);
+
+    setSearchValue(books.items[0].volumeInfo.imageLinks.thumbnail);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+  };
+
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearchClick();
+    }
   };
 
   return (
@@ -41,10 +49,11 @@ const App = () => {
         }
         size="lg"
         onChange={handleSearchChange}
+        onKeyDown={handleEnterPress}
       />
-      <Button>Settings</Button>
+      {searchValue !== "" ? <SearchResult imgSrc={searchValue} /> : null}
     </div>
   );
-};
+}
 
 export default App;
