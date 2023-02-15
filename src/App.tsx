@@ -3,24 +3,19 @@ import { useState } from "react";
 import { IconSearch } from "@tabler/icons-react";
 import "./App.css";
 import SearchResult from "./components/SearchResult";
+import { searchBooks } from "./services/google-books-service";
+import { SearchResultInfo } from "./types";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [retrievedBooks, setRetrievedBooks] = useState<SearchResultInfo[]>([]);
 
   const handleSearchClick = async () => {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${inputValue}`,
-      {
-        method: "GET",
-      }
-    );
+    const books = await searchBooks(inputValue);
 
-    const books = await response.json();
+    console.log(books);
 
-    console.log(books.items[0]);
-
-    setSearchValue(books.items[0].volumeInfo.imageLinks.thumbnail);
+    setRetrievedBooks(books);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +46,17 @@ function App() {
         onChange={handleSearchChange}
         onKeyDown={handleEnterPress}
       />
-      {searchValue !== "" ? <SearchResult imgSrc={searchValue} /> : null}
+      {retrievedBooks.map((bookResult) => {
+        return (
+          <SearchResult
+            title={bookResult.title}
+            subtitle={bookResult.subtitle}
+            authors={bookResult.authors}
+            imgSrc={bookResult.imgSrc}
+            key={`${bookResult.title}`}
+          />
+        );
+      })}
     </div>
   );
 }
