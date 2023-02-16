@@ -53,7 +53,7 @@ function App() {
             subtitle={bookResult.subtitle}
             authors={bookResult.authors}
             imgSrc={bookResult.imgSrc}
-            key={`${bookResult.title}`}
+            key={`${Math.random()}`}
           />
         );
       })}

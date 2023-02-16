@@ -24,7 +24,7 @@ const SearchResult: FC<SearchResultInfo> = ({
   return (
     <div className="SearchResult">
       <Image
-        width={100}
+        width={120}
         radius="md"
         src={imgSrc}
         fit="contain"
@@ -33,7 +33,7 @@ const SearchResult: FC<SearchResultInfo> = ({
       <Text fz="xl">{title}</Text>
       <Text fz="md">{subtitle}</Text>
       <Text fz="md">{title}</Text>
-      <Text fz="lg">by {formatAuthors(authors)}</Text>
+      {authors ? <Text fz="lg">by {formatAuthors(authors)}</Text> : null}
     </div>
   );
 };
