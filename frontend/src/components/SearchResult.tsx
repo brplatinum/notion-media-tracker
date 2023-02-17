@@ -1,6 +1,6 @@
 import { Image, Text } from "@mantine/core";
 import { FC, useState } from "react";
-import { SearchResultInfo } from "../types";
+import { SearchResultInfo } from "@backend/types/books-api";
 
 const formatAuthors = (authors: string[]) => {
   if (authors.length === 1) return authors[0];

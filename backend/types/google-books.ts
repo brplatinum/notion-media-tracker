@@ -1,10 +1,3 @@
-export interface SearchResultInfo {
-  title: string;
-  subtitle: string;
-  authors: string[] | undefined;
-  imgSrc: string | undefined;
-}
-
 export interface GoogleBook {
   kind: string;
   id: string;

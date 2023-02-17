@@ -1,4 +1,5 @@
-import { GoogleBook, SearchResultInfo } from "../types";
+import { SearchResultInfo } from "@backend/types/books-api";
+import { GoogleBook } from "@backend/types/google-books";
 
 export const searchBooks = async (
   searchQuery: string
