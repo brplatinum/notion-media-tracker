@@ -3,7 +3,7 @@ import { useState } from "react";
 import { IconSearch } from "@tabler/icons-react";
 import "./App.css";
 import SearchResult from "./components/SearchResult";
-import { searchBooks } from "./services/google-books-service";
+import { searchBooks } from "./services/books-service";
 import { SearchResultInfo } from "@backend/types/books-api";
 
 function App() {

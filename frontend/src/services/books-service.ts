@@ -1,6 +1,8 @@
 import { SearchResultInfo } from "@backend/types/books-api";
 import { GoogleBook } from "@backend/types/google-books";
 
+const backendUrl = import.meta.env.VITE_API_KEY || "http://localhost:3000";
+
 export const searchBooks = async (
   searchQuery: string
 ): Promise<SearchResultInfo[]> => {

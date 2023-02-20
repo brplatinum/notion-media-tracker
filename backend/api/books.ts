@@ -14,7 +14,7 @@ router.get("/results", async (req, res) => {
 
   const googleBooks = (await response.json()) as { items: GoogleBook[] };
 
-  const searchResults = googleBooks.items.map((bookItem: GoogleBook) => {
+  const searchResults = googleBooks.items.map((bookItem) => {
     return {
       title: bookItem.volumeInfo.title,
       subtitle: bookItem.volumeInfo.subtitle,
