@@ -4,7 +4,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/results", async (req, res) => {
+router.get("/search", async (req, res) => {
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=${req.query.search_query}`,
     {

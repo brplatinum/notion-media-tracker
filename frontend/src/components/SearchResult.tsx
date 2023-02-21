@@ -1,6 +1,7 @@
 import { Image, Text } from "@mantine/core";
 import { FC, useState } from "react";
 import { SearchResultInfo } from "@backend/types/books-api";
+import SearchResultButtons from "./SearchResultButtons";
 
 const formatAuthors = (authors: string[]) => {
   if (authors.length === 1) return authors[0];
@@ -32,8 +33,11 @@ const SearchResult: FC<SearchResultInfo> = ({
       />
       <Text fz="xl">{title}</Text>
       <Text fz="md">{subtitle}</Text>
-      <Text fz="md">{title}</Text>
       {authors ? <Text fz="lg">by {formatAuthors(authors)}</Text> : null}
+      <SearchResultButtons
+        nextText="Read next"
+        currentlyText="Currently reading"
+      ></SearchResultButtons>
     </div>
   );
 };
