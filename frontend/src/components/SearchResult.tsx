@@ -1,6 +1,7 @@
+import { BookInfo } from "@backend/types/books-api";
 import { Image, Text } from "@mantine/core";
-import { FC, useState } from "react";
-import { SearchResultInfo } from "@backend/types/books-api";
+import { FC } from "react";
+import { addBookToNotion } from "../services/books-service";
 import SearchResultButtons from "./SearchResultButtons";
 
 const formatAuthors = (authors: string[]) => {
@@ -16,12 +17,11 @@ const formatAuthors = (authors: string[]) => {
   return `${authorsOutput} and ${authors[authors.length - 1]}`;
 };
 
-const SearchResult: FC<SearchResultInfo> = ({
-  title,
-  subtitle,
-  authors,
-  imgSrc,
-}) => {
+const SearchResult: FC<BookInfo> = ({ title, subtitle, authors, imgSrc }) => {
+  function handleAddItemClick() {
+    addBookToNotion({ title, subtitle, authors, imgSrc });
+  }
+
   return (
     <div className="SearchResult">
       <Image
@@ -37,6 +37,7 @@ const SearchResult: FC<SearchResultInfo> = ({
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
+        handleAddItemClick={handleAddItemClick}
       ></SearchResultButtons>
     </div>
   );

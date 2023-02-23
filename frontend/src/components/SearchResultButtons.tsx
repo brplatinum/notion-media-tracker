@@ -1,6 +1,5 @@
-import { Button, Image, Text } from "@mantine/core";
-import { FC, useState } from "react";
-import { SearchResultInfo } from "@backend/types/books-api";
+import { Button } from "@mantine/core";
+import { FC } from "react";
 
 const formatAuthors = (authors: string[]) => {
   if (authors.length === 1) return authors[0];
@@ -15,13 +14,14 @@ const formatAuthors = (authors: string[]) => {
   return `${authorsOutput} and ${authors[authors.length - 1]}`;
 };
 
-const SearchResultButtons: FC<{ nextText: string; currentlyText: string }> = ({
-  nextText,
-  currentlyText,
-}) => {
+const SearchResultButtons: FC<{
+  nextText: string;
+  currentlyText: string;
+  handleAddItemClick: () => void;
+}> = ({ nextText, currentlyText, handleAddItemClick }) => {
   return (
     <div className="SearchResultButtons">
-      <Button>Add to shelf</Button>
+      <Button onClick={handleAddItemClick}>Add to shelf</Button>
       <Button>{nextText}</Button>
       <Button>Finished</Button>
       <Button>{currentlyText}</Button>

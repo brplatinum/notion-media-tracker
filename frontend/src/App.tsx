@@ -1,19 +1,17 @@
-import { Button, Input } from "@mantine/core";
-import { useState } from "react";
+import { BookInfo } from "@backend/types/books-api";
+import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
+import { useState } from "react";
 import "./App.css";
 import SearchResult from "./components/SearchResult";
 import { searchBooks } from "./services/books-service";
-import { SearchResultInfo } from "@backend/types/books-api";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
-  const [retrievedBooks, setRetrievedBooks] = useState<SearchResultInfo[]>([]);
+  const [retrievedBooks, setRetrievedBooks] = useState<BookInfo[]>([]);
 
   const handleSearchClick = async () => {
     const books = await searchBooks(inputValue);
-
-    console.log(books);
 
     setRetrievedBooks(books);
   };
