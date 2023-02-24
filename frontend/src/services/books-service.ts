@@ -14,7 +14,17 @@ export const searchBooks = async (searchQuery: string): Promise<BookInfo[]> => {
 };
 
 export const addBookToNotion = async (bookInfo: BookInfo) => {
-  await fetch(`${backendUrl}/books/add-to-notion`, {
+  await fetch(`${backendUrl}/books/add-to-shelf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookInfo }),
+  });
+
+  return CallStatus.SUCCESS;
+};
+
+export const addNextBookToNotion = async (bookInfo: BookInfo) => {
+  await fetch(`${backendUrl}/books/read-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ bookInfo }),

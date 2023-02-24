@@ -21,10 +21,10 @@ router.get("/search", async (req, res) => {
 
   const searchResults = googleBooks.items.map((bookItem) => {
     const isbn =
-      bookItem.volumeInfo.industryIdentifiers.find((industryIdentifier) => {
+      bookItem.volumeInfo.industryIdentifiers?.find((industryIdentifier) => {
         return industryIdentifier.type === "ISBN_13";
       })?.identifier ||
-      bookItem.volumeInfo.industryIdentifiers.find((industryIdentifier) => {
+      bookItem.volumeInfo.industryIdentifiers?.find((industryIdentifier) => {
         return industryIdentifier.type === "ISBN_10";
       })?.identifier;
 
@@ -46,7 +46,7 @@ router.get("/search", async (req, res) => {
   res.status(200).json(searchResults);
 });
 
-router.post("/add-to-notion", async (req, res) => {
+router.post("/add-to-shelf", async (req, res) => {
   const addBookRequest = req.body as AddBookRequest;
   const properties = generateCreatePageProperties(addBookRequest);
 
@@ -70,7 +70,34 @@ router.post("/add-to-notion", async (req, res) => {
 
   await notion.pages.create(createPageParameters);
 
-  res.status(200);
+  res.sendStatus(200);
+});
+
+router.post("/read-next", async (req, res) => {
+  const addBookRequest = req.body as AddBookRequest;
+  const properties = generateCreatePageProperties(addBookRequest);
+
+  properties["Status"] = {
+    status: {
+      name: "Up Next",
+    },
+  };
+
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
+
+  if (addBookRequest.bookInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addBookRequest.bookInfo.imgSrc,
+      },
+    };
+
+  await notion.pages.create(createPageParameters);
+
+  res.sendStatus(200);
 });
 
 function generateCreatePageProperties(addBookRequest: AddBookRequest) {
@@ -107,6 +134,10 @@ function generateCreatePageProperties(addBookRequest: AddBookRequest) {
   if (addBookRequest.bookInfo.authors) {
     properties["Author(s)"] = {
       multi_select: addBookRequest.bookInfo.authors.map((author) => {
+        if (author.includes(",")) {
+          const authorsSplit = author.split(",");
+          author = `${authorsSplit[1]} ${authorsSplit[0]}`;
+        }
         return { name: author };
       }),
     };
