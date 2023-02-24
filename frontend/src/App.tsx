@@ -51,6 +51,9 @@ function App() {
             subtitle={bookResult.subtitle}
             authors={bookResult.authors}
             imgSrc={bookResult.imgSrc}
+            genres={bookResult.genres}
+            ids={bookResult.ids}
+            year={bookResult.year}
             key={`${Math.random()}`}
           />
         );

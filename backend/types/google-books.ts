@@ -11,6 +11,9 @@ export interface VolumeInfo {
   subtitle: string;
   authors: string[];
   imageLinks: ImageLinks;
+  categories: string[];
+  industryIdentifiers: { type: string; identifier: string }[];
+  publishedDate: string;
 }
 
 export interface ImageLinks {

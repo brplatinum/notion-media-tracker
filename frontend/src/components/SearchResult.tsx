@@ -17,9 +17,17 @@ const formatAuthors = (authors: string[]) => {
   return `${authorsOutput} and ${authors[authors.length - 1]}`;
 };
 
-const SearchResult: FC<BookInfo> = ({ title, subtitle, authors, imgSrc }) => {
+const SearchResult: FC<BookInfo> = ({
+  title,
+  subtitle,
+  authors,
+  imgSrc,
+  genres,
+  ids,
+  year,
+}) => {
   function handleAddItemClick() {
-    addBookToNotion({ title, subtitle, authors, imgSrc });
+    addBookToNotion({ title, subtitle, authors, imgSrc, genres, ids, year });
   }
 
   return (

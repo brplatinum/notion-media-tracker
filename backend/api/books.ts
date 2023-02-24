@@ -20,11 +20,26 @@ router.get("/search", async (req, res) => {
   const googleBooks = (await response.json()) as { items: GoogleBook[] };
 
   const searchResults = googleBooks.items.map((bookItem) => {
+    const isbn =
+      bookItem.volumeInfo.industryIdentifiers.find((industryIdentifier) => {
+        return industryIdentifier.type === "ISBN_13";
+      })?.identifier ||
+      bookItem.volumeInfo.industryIdentifiers.find((industryIdentifier) => {
+        return industryIdentifier.type === "ISBN_10";
+      })?.identifier;
+
+    const ids = isbn
+      ? [`isbn:${isbn}`, `google:${bookItem.id}`]
+      : [`google:${bookItem.id}`];
+
     return {
       title: bookItem.volumeInfo.title,
       subtitle: bookItem.volumeInfo.subtitle,
       authors: bookItem.volumeInfo.authors,
       imgSrc: bookItem.volumeInfo.imageLinks?.thumbnail,
+      genres: bookItem.volumeInfo.categories,
+      ids,
+      year: bookItem.volumeInfo.publishedDate?.split("-")[0],
     } as BookInfo;
   });
 
@@ -77,6 +92,18 @@ function generateCreatePageProperties(addBookRequest: AddBookRequest) {
     },
   };
 
+  properties["ID"] = {
+    rich_text: [
+      {
+        text: {
+          content: addBookRequest.bookInfo.ids
+            .reduce((accumulator, id) => `${accumulator}${id} `, "")
+            .trim(),
+        },
+      },
+    ],
+  };
+
   if (addBookRequest.bookInfo.authors) {
     properties["Author(s)"] = {
       multi_select: addBookRequest.bookInfo.authors.map((author) => {
@@ -88,6 +115,20 @@ function generateCreatePageProperties(addBookRequest: AddBookRequest) {
   if (addBookRequest.bookInfo.subtitle) {
     properties["Subtitle"] = {
       rich_text: [{ text: { content: addBookRequest.bookInfo.subtitle } }],
+    };
+  }
+
+  if (addBookRequest.bookInfo.genres) {
+    properties["Genre(s)"] = {
+      multi_select: addBookRequest.bookInfo.genres.map((genre) => {
+        return { name: genre };
+      }),
+    };
+  }
+
+  if (addBookRequest.bookInfo.year) {
+    properties["Year"] = {
+      rich_text: [{ text: { content: addBookRequest.bookInfo.year } }],
     };
   }
 
