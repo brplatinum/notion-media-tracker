@@ -33,10 +33,17 @@ router.get("/search", async (req, res) => {
 
 router.post("/add-to-notion", async (req, res) => {
   const addBookRequest = req.body as AddBookRequest;
+  const properties = generateCreatePageProperties(addBookRequest);
+
+  properties["Status"] = {
+    status: {
+      name: "Backlog",
+    },
+  };
 
   const createPageParameters: CreatePageParameters = {
     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-    properties: generateCreatePageProperties(addBookRequest),
+    properties,
   };
 
   if (addBookRequest.bookInfo.imgSrc)
@@ -55,6 +62,18 @@ function generateCreatePageProperties(addBookRequest: AddBookRequest) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
       title: [{ text: { content: addBookRequest.bookInfo.title } }],
+    },
+  };
+
+  properties["Media Type"] = {
+    select: {
+      name: "Book",
+    },
+  };
+
+  properties["Added"] = {
+    date: {
+      start: new Date().toISOString(),
     },
   };
 
