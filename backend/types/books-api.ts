@@ -11,3 +11,8 @@ export interface BookInfo {
 export interface AddBookRequest {
   bookInfo: BookInfo;
 }
+
+export interface FinishedBookRequest {
+  bookInfo: BookInfo;
+  rating: string;
+}

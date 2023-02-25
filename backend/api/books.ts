@@ -1,4 +1,8 @@
-import { AddBookRequest, BookInfo } from "@backend/types/books-api";
+import {
+  AddBookRequest,
+  BookInfo,
+  FinishedBookRequest,
+} from "@backend/types/books-api";
 import { GoogleBook } from "@backend/types/google-books";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
@@ -100,7 +104,48 @@ router.post("/read-next", async (req, res) => {
   res.sendStatus(200);
 });
 
-function generateCreatePageProperties(addBookRequest: AddBookRequest) {
+router.post("/finished", async (req, res) => {
+  const finishedBookRequest = req.body as FinishedBookRequest;
+  const properties = generateCreatePageProperties(finishedBookRequest);
+
+  properties["Status"] = {
+    status: {
+      name: "Finished",
+    },
+  };
+
+  properties["Rating /10"] = {
+    select: {
+      name: finishedBookRequest.rating,
+    },
+  };
+
+  properties["Finished Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
+
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
+
+  if (finishedBookRequest.bookInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: finishedBookRequest.bookInfo.imgSrc,
+      },
+    };
+
+  await notion.pages.create(createPageParameters);
+
+  res.sendStatus(200);
+});
+
+function generateCreatePageProperties(
+  addBookRequest: AddBookRequest | FinishedBookRequest
+) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
       title: [{ text: { content: addBookRequest.bookInfo.title } }],

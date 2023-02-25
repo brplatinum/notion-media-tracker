@@ -32,3 +32,16 @@ export const addNextBookToNotion = async (bookInfo: BookInfo) => {
 
   return CallStatus.SUCCESS;
 };
+
+export const addFinishedBookToNotion = async (
+  bookInfo: BookInfo,
+  rating: number
+) => {
+  await fetch(`${backendUrl}/books/finished`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookInfo, rating: (rating * 2).toString() }),
+  });
+
+  return CallStatus.SUCCESS;
+};
