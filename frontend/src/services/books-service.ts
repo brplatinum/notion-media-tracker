@@ -45,3 +45,13 @@ export const addFinishedBookToNotion = async (
 
   return CallStatus.SUCCESS;
 };
+
+export const addCurrentBookToNotion = async (bookInfo: BookInfo) => {
+  await fetch(`${backendUrl}/books/currently-reading`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookInfo }),
+  });
+
+  return CallStatus.SUCCESS;
+};

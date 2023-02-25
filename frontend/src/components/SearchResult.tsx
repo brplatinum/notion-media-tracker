@@ -3,6 +3,7 @@ import { Image, Text } from "@mantine/core";
 import { FC } from "react";
 import {
   addBookToNotion,
+  addCurrentBookToNotion,
   addFinishedBookToNotion,
   addNextBookToNotion,
 } from "../services/books-service";
@@ -30,7 +31,7 @@ const SearchResult: FC<BookInfo> = ({
   ids,
   year,
 }) => {
-  function handleAddItemClick() {
+  function handleAddShelfClick() {
     addBookToNotion({ title, subtitle, authors, imgSrc, genres, ids, year });
   }
 
@@ -61,6 +62,18 @@ const SearchResult: FC<BookInfo> = ({
     );
   }
 
+  function handleAddCurrentClick() {
+    addCurrentBookToNotion({
+      title,
+      subtitle,
+      authors,
+      imgSrc,
+      genres,
+      ids,
+      year,
+    });
+  }
+
   return (
     <div className="SearchResult">
       <Image
@@ -76,9 +89,10 @@ const SearchResult: FC<BookInfo> = ({
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
-        handleAddItemClick={handleAddItemClick}
+        handleAddShelfClick={handleAddShelfClick}
         handleAddNextClick={handleAddNextClick}
         handleRatingChange={handleRatingChange}
+        handleAddCurrentClick={handleAddCurrentClick}
       ></SearchResultButtons>
     </div>
   );

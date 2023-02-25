@@ -3,21 +3,23 @@ import { Button, Menu, Rating } from "@mantine/core";
 type SearchResultButtonsProps = {
   nextText: string;
   currentlyText: string;
-  handleAddItemClick: () => void;
+  handleAddShelfClick: () => void;
   handleAddNextClick: () => void;
   handleRatingChange: (rating: number) => void;
+  handleAddCurrentClick: () => void;
 };
 
 const SearchResultButtons = ({
   nextText,
   currentlyText,
-  handleAddItemClick,
+  handleAddShelfClick,
   handleAddNextClick,
   handleRatingChange,
+  handleAddCurrentClick,
 }: SearchResultButtonsProps) => {
   return (
     <div className="SearchResultButtons">
-      <Button onClick={handleAddItemClick}>Add to shelf</Button>
+      <Button onClick={handleAddShelfClick}>Add to shelf</Button>
       <Button onClick={handleAddNextClick}>{nextText}</Button>
       <Menu shadow="md" width={200}>
         <Menu.Target>
@@ -30,7 +32,7 @@ const SearchResultButtons = ({
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Button>{currentlyText}</Button>
+      <Button onClick={handleAddCurrentClick}>{currentlyText}</Button>
     </div>
   );
 };

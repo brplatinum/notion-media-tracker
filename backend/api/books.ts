@@ -143,6 +143,39 @@ router.post("/finished", async (req, res) => {
   res.sendStatus(200);
 });
 
+router.post("/currently-reading", async (req, res) => {
+  const finishedBookRequest = req.body as AddBookRequest;
+  const properties = generateCreatePageProperties(finishedBookRequest);
+
+  properties["Status"] = {
+    status: {
+      name: "Reading",
+    },
+  };
+
+  properties["Start Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
+
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
+
+  if (finishedBookRequest.bookInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: finishedBookRequest.bookInfo.imgSrc,
+      },
+    };
+
+  await notion.pages.create(createPageParameters);
+
+  res.sendStatus(200);
+});
+
 function generateCreatePageProperties(
   addBookRequest: AddBookRequest | FinishedBookRequest
 ) {
