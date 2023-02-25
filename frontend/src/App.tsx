@@ -1,31 +1,12 @@
-import { BookInfo } from "@backend/types/books-api";
-import { Input, SegmentedControl } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { SegmentedControl } from "@mantine/core";
 import { useState } from "react";
 import "./App.css";
-import SearchResult from "./components/SearchResult";
-import { searchBooks } from "./services/books-service";
+import BookSearch from "./components/BookSearch";
+import MovieSearch from "./components/MovieSearch";
+import TvSearch from "./components/TvSearch";
 
 function App() {
-  const [inputValue, setInputValue] = useState("");
-  const [retrievedBooks, setRetrievedBooks] = useState<BookInfo[]>([]);
   const [mediaType, setMediaType] = useState("books");
-
-  const handleSearchClick = async () => {
-    const books = await searchBooks(inputValue);
-
-    setRetrievedBooks(books);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearchClick();
-    }
-  };
 
   const handleMediaTypeChange = (mediaType: string) => {
     setMediaType(mediaType);
@@ -42,36 +23,16 @@ function App() {
         defaultValue={mediaType}
         onChange={handleMediaTypeChange}
       />
-      <Input
-        placeholder="Search for books"
-        rightSection={
-          <div>
-            <IconSearch
-              size={18}
-              style={{ display: "block", opacity: 0.5 }}
-              onClick={handleSearchClick}
-              cursor="pointer"
-            />
-          </div>
+      {(() => {
+        switch (mediaType) {
+          case "books":
+            return <BookSearch></BookSearch>;
+          case "movies":
+            return <MovieSearch></MovieSearch>;
+          case "tv":
+            return <TvSearch></TvSearch>;
         }
-        size="lg"
-        onChange={handleSearchChange}
-        onKeyDown={handleEnterPress}
-      />
-      {retrievedBooks.map((bookResult) => {
-        return (
-          <SearchResult
-            title={bookResult.title}
-            subtitle={bookResult.subtitle}
-            authors={bookResult.authors}
-            imgSrc={bookResult.imgSrc}
-            genres={bookResult.genres}
-            ids={bookResult.ids}
-            year={bookResult.year}
-            key={`${Math.random()}`}
-          />
-        );
-      })}
+      })()}
     </div>
   );
 }

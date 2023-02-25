@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
-import bookRouter from "./api/books.js";
+import booksRouter from "./api/books.js";
+import moviesRouter from "./api/movies.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(
   })
 );
 
-app.use("/books", bookRouter);
+app.use("/books", booksRouter);
+app.use("/movies", moviesRouter);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

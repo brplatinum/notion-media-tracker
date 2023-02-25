@@ -1,6 +1,4 @@
-import { BookInfo } from "@backend/types/books-api";
 import { Image, Text } from "@mantine/core";
-import { FC } from "react";
 import {
   addBookToNotion,
   addCurrentBookToNotion,
@@ -9,37 +7,55 @@ import {
 } from "../services/books-service";
 import SearchResultButtons from "./SearchResultButtons";
 
-const formatAuthors = (authors: string[]) => {
-  if (authors.length === 1) return authors[0];
-  if (authors.length === 2) return `${authors[0]} and ${authors[1]}`;
+const formatCreators = (creators: string[]) => {
+  if (creators.length === 1) return creators[0];
+  if (creators.length === 2) return `${creators[0]} and ${creators[1]}`;
 
   let authorsOutput = "";
 
   for (let i = 0; i < authorsOutput.length - 1; i++) {
-    authorsOutput += `${authors[i]},`;
+    authorsOutput += `${creators[i]},`;
   }
 
-  return `${authorsOutput} and ${authors[authors.length - 1]}`;
+  return `${authorsOutput} and ${creators[creators.length - 1]}`;
 };
 
-const SearchResult: FC<BookInfo> = ({
+type SearchResultProps = {
+  title: string;
+  subtitle?: string;
+  creators?: string[];
+  imgSrc?: string;
+  genres?: string[];
+  ids: string[];
+  year?: string;
+};
+
+const SearchResult = ({
   title,
   subtitle,
-  authors,
+  creators,
   imgSrc,
   genres,
   ids,
   year,
-}) => {
+}: SearchResultProps) => {
   function handleAddShelfClick() {
-    addBookToNotion({ title, subtitle, authors, imgSrc, genres, ids, year });
+    addBookToNotion({
+      title,
+      subtitle,
+      authors: creators,
+      imgSrc,
+      genres,
+      ids,
+      year,
+    });
   }
 
   function handleAddNextClick() {
     addNextBookToNotion({
       title,
       subtitle,
-      authors,
+      authors: creators,
       imgSrc,
       genres,
       ids,
@@ -52,7 +68,7 @@ const SearchResult: FC<BookInfo> = ({
       {
         title,
         subtitle,
-        authors,
+        authors: creators,
         imgSrc,
         genres,
         ids,
@@ -66,7 +82,7 @@ const SearchResult: FC<BookInfo> = ({
     addCurrentBookToNotion({
       title,
       subtitle,
-      authors,
+      authors: creators,
       imgSrc,
       genres,
       ids,
@@ -85,7 +101,7 @@ const SearchResult: FC<BookInfo> = ({
       />
       <Text fz="xl">{title}</Text>
       <Text fz="md">{subtitle}</Text>
-      {authors ? <Text fz="lg">by {formatAuthors(authors)}</Text> : null}
+      {creators ? <Text fz="lg">by {formatCreators(creators)}</Text> : null}
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
