@@ -1,5 +1,5 @@
 import { BookInfo } from "@backend/types/books-api";
-import { Input } from "@mantine/core";
+import { Input, SegmentedControl } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 import "./App.css";
@@ -9,6 +9,7 @@ import { searchBooks } from "./services/books-service";
 function App() {
   const [inputValue, setInputValue] = useState("");
   const [retrievedBooks, setRetrievedBooks] = useState<BookInfo[]>([]);
+  const [mediaType, setMediaType] = useState("books");
 
   const handleSearchClick = async () => {
     const books = await searchBooks(inputValue);
@@ -26,8 +27,21 @@ function App() {
     }
   };
 
+  const handleMediaTypeChange = (mediaType: string) => {
+    setMediaType(mediaType);
+  };
+
   return (
     <div className="App">
+      <SegmentedControl
+        data={[
+          { label: "Books", value: "books" },
+          { label: "Movies", value: "movies" },
+          { label: "TV Shows", value: "tv" },
+        ]}
+        defaultValue={mediaType}
+        onChange={handleMediaTypeChange}
+      />
       <Input
         placeholder="Search for books"
         rightSection={
