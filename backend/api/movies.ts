@@ -21,33 +21,37 @@ router.get("/search", async (req, res) => {
 
   const movieSearchResponse = (await response.json()) as TmdbMovieSearch;
 
-  const searchResults = movieSearchResponse.results?.map(async (movieItem) => {
-    const creditsResponse = (await (
-      await fetch(
-        `https://api.themoviedb.org/3/movie/${movieItem.id}/credits`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-        }
-      )
-    ).json()) as TmdbMovieCredits;
+  const searchResultsPromises = movieSearchResponse.results?.map(
+    async (movieItem) => {
+      const creditsResponse = (await (
+        await fetch(
+          `https://api.themoviedb.org/3/movie/${movieItem.id}/credits`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+          }
+        )
+      ).json()) as TmdbMovieCredits;
 
-    const directors = creditsResponse.crew
-      ?.filter((crewDetails) => {
-        crewDetails.job?.toLowerCase() === "director";
-      })
-      .map((directorDetails) => {
-        return directorDetails.name || "";
-      });
+      const directors = creditsResponse.crew
+        ?.filter((crewDetails) => {
+          return crewDetails.job?.toLowerCase() === "director";
+        })
+        .map((directorDetails) => {
+          return directorDetails.name || "";
+        });
 
-    return {
-      title: movieItem.title,
-      directors,
-      imgSrc: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieItem.poster_path}`,
-      ids: [`tmdb:${movieItem.id}`],
-      year: movieItem.release_date?.split("-")[0],
-    } as MovieInfo;
-  });
+      return {
+        title: movieItem.title,
+        directors,
+        imgSrc: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieItem.poster_path}`,
+        ids: [`tmdb:${movieItem.id}`],
+        year: movieItem.release_date?.split("-")[0],
+      } as MovieInfo;
+    }
+  );
+
+  const searchResults = await Promise.all(searchResultsPromises!);
 
   res.status(200).json(searchResults);
 });

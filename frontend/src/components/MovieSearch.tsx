@@ -51,6 +51,7 @@ const MovieSearch = () => {
             ids={movieResult.ids}
             year={movieResult.year}
             key={`${Math.random()}`}
+            showYearInTitle
           />
         );
       })}

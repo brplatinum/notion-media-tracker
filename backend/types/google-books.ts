@@ -8,12 +8,12 @@ export interface GoogleBook {
 
 export interface VolumeInfo {
   title: string;
-  subtitle: string | null;
-  authors: string[] | null;
-  imageLinks: ImageLinks | null;
-  categories: string[] | null;
-  industryIdentifiers: { type: string; identifier: string }[] | null;
-  publishedDate: string | null;
+  subtitle?: string;
+  authors?: string[];
+  imageLinks?: ImageLinks;
+  categories?: string[];
+  industryIdentifiers?: { type: string; identifier: string }[];
+  publishedDate?: string;
 }
 
 export interface ImageLinks {

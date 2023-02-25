@@ -1,11 +1,11 @@
 export interface BookInfo {
   title: string;
-  subtitle: string | null;
-  authors: string[] | null;
-  imgSrc: string | null;
-  genres: string[] | null;
+  subtitle?: string;
+  authors?: string[];
+  imgSrc?: string;
+  genres?: string[];
   ids: string[];
-  year: string | null;
+  year?: string;
 }
 
 export interface AddBookRequest {

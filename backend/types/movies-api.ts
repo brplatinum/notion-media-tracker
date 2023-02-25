@@ -1,7 +1,7 @@
 export interface MovieInfo {
   title: string;
-  directors: string[] | null;
-  imgSrc: string | null;
+  directors?: string[];
+  imgSrc?: string;
   ids: string[];
-  year: string | null;
+  year?: string;
 }

@@ -11,13 +11,13 @@ const formatCreators = (creators: string[]) => {
   if (creators.length === 1) return creators[0];
   if (creators.length === 2) return `${creators[0]} and ${creators[1]}`;
 
-  let authorsOutput = "";
+  let creatorsOutput = "";
 
-  for (let i = 0; i < authorsOutput.length - 1; i++) {
-    authorsOutput += `${creators[i]},`;
+  for (let i = 0; i < creators.length - 1; i++) {
+    creatorsOutput += `${creators[i]}, `;
   }
 
-  return `${authorsOutput} and ${creators[creators.length - 1]}`;
+  return `${creatorsOutput} and ${creators[creators.length - 1]}`;
 };
 
 type SearchResultProps = {
@@ -28,6 +28,7 @@ type SearchResultProps = {
   genres?: string[];
   ids: string[];
   year?: string;
+  showYearInTitle?: boolean;
 };
 
 const SearchResult = ({
@@ -38,6 +39,7 @@ const SearchResult = ({
   genres,
   ids,
   year,
+  showYearInTitle = false,
 }: SearchResultProps) => {
   function handleAddShelfClick() {
     addBookToNotion({
@@ -99,9 +101,13 @@ const SearchResult = ({
         fit="contain"
         withPlaceholder
       />
-      <Text fz="xl">{title}</Text>
+      <Text fz="xl">
+        {showYearInTitle && year ? `${title} (${year})` : title}
+      </Text>
       <Text fz="md">{subtitle}</Text>
-      {creators ? <Text fz="lg">by {formatCreators(creators)}</Text> : null}
+      {creators?.length ? (
+        <Text fz="lg">by {formatCreators(creators)}</Text>
+      ) : null}
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
