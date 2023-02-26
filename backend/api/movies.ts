@@ -41,9 +41,14 @@ router.get("/search", async (req, res) => {
           return directorDetails.name || "";
         });
 
+      const starring = creditsResponse.cast?.slice(0, 3).map((castDetails) => {
+        return castDetails.name;
+      });
+
       return {
         title: movieItem.title,
         directors,
+        starring,
         imgSrc: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieItem.poster_path}`,
         ids: [`tmdb:${movieItem.id}`],
         year: movieItem.release_date?.split("-")[0],

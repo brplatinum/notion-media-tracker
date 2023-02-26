@@ -7,23 +7,24 @@ import {
 } from "../services/books-service";
 import SearchResultButtons from "./SearchResultButtons";
 
-const formatCreators = (creators: string[]) => {
-  if (creators.length === 1) return creators[0];
-  if (creators.length === 2) return `${creators[0]} and ${creators[1]}`;
+const formatPeople = (people: string[]) => {
+  if (people.length === 1) return people[0];
+  if (people.length === 2) return `${people[0]} and ${people[1]}`;
 
-  let creatorsOutput = "";
+  let peopleOutput = "";
 
-  for (let i = 0; i < creators.length - 1; i++) {
-    creatorsOutput += `${creators[i]}, `;
+  for (let i = 0; i < people.length - 1; i++) {
+    peopleOutput += `${people[i]}, `;
   }
 
-  return `${creatorsOutput} and ${creators[creators.length - 1]}`;
+  return `${peopleOutput} and ${people[people.length - 1]}`;
 };
 
 type SearchResultProps = {
   title: string;
   subtitle?: string;
   creators?: string[];
+  starring?: string[];
   imgSrc?: string;
   genres?: string[];
   ids: string[];
@@ -35,6 +36,7 @@ const SearchResult = ({
   title,
   subtitle,
   creators,
+  starring,
   imgSrc,
   genres,
   ids,
@@ -106,7 +108,10 @@ const SearchResult = ({
       </Text>
       <Text fz="md">{subtitle}</Text>
       {creators?.length ? (
-        <Text fz="lg">by {formatCreators(creators)}</Text>
+        <Text fz="lg">by {formatPeople(creators)}</Text>
+      ) : null}
+      {starring?.length ? (
+        <Text fz="lg">starring {formatPeople(starring)}</Text>
       ) : null}
       <SearchResultButtons
         nextText="Read next"

@@ -47,6 +47,7 @@ const MovieSearch = () => {
           <SearchResult
             title={movieResult.title}
             creators={movieResult.directors}
+            starring={movieResult.starring}
             imgSrc={movieResult.imgSrc}
             ids={movieResult.ids}
             year={movieResult.year}
