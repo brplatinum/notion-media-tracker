@@ -3,24 +3,24 @@ import { Button, Menu, Rating } from "@mantine/core";
 type SearchResultButtonsProps = {
   nextText: string;
   currentlyText: string;
-  handleAddShelfClick: () => void;
-  handleAddNextClick: () => void;
-  handleRatingChange: (rating: number) => void;
-  handleAddCurrentClick: () => void;
+  onAddShelfClick: () => void;
+  onAddNextClick: () => void;
+  onRatingChange: (rating: number) => void;
+  onAddCurrentClick: () => void;
 };
 
 const SearchResultButtons = ({
   nextText,
   currentlyText,
-  handleAddShelfClick,
-  handleAddNextClick,
-  handleRatingChange,
-  handleAddCurrentClick,
+  onAddShelfClick,
+  onAddNextClick,
+  onRatingChange,
+  onAddCurrentClick,
 }: SearchResultButtonsProps) => {
   return (
     <div className="SearchResultButtons">
-      <Button onClick={handleAddShelfClick}>Add to shelf</Button>
-      <Button onClick={handleAddNextClick}>{nextText}</Button>
+      <Button onClick={onAddShelfClick}>Add to shelf</Button>
+      <Button onClick={onAddNextClick}>{nextText}</Button>
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <Button>Finished</Button>
@@ -28,11 +28,11 @@ const SearchResultButtons = ({
         <Menu.Dropdown>
           <Menu.Label>Rating</Menu.Label>
           <Menu.Item>
-            <Rating fractions={2} onChange={handleRatingChange} />
+            <Rating fractions={2} onChange={onRatingChange} />
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Button onClick={handleAddCurrentClick}>{currentlyText}</Button>
+      <Button onClick={onAddCurrentClick}>{currentlyText}</Button>
     </div>
   );
 };

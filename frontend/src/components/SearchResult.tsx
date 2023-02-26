@@ -1,10 +1,5 @@
 import { Image, Text } from "@mantine/core";
-import {
-  addBookToNotion,
-  addCurrentBookToNotion,
-  addFinishedBookToNotion,
-  addNextBookToNotion,
-} from "../services/books-service";
+import { MediaInfo } from "../types/util";
 import SearchResultButtons from "./SearchResultButtons";
 
 const formatPeople = (people: string[]) => {
@@ -21,77 +16,36 @@ const formatPeople = (people: string[]) => {
 };
 
 type SearchResultProps = {
-  title: string;
-  subtitle?: string;
-  creators?: string[];
-  starring?: string[];
-  imgSrc?: string;
-  genres?: string[];
-  ids: string[];
-  year?: string;
+  mediaInfo: MediaInfo;
   showYearInTitle?: boolean;
+  onAddShelfClick: (mediaInfo: MediaInfo) => void;
+  onAddNextClick: (mediaInfo: MediaInfo) => void;
+  onRatingChange: (mediaInfo: MediaInfo, rating: number) => void;
+  onAddCurrentClick: (mediaInfo: MediaInfo) => void;
 };
 
 const SearchResult = ({
-  title,
-  subtitle,
-  creators,
-  starring,
-  imgSrc,
-  genres,
-  ids,
-  year,
+  mediaInfo,
   showYearInTitle = false,
+  onAddShelfClick,
+  onAddNextClick,
+  onRatingChange,
+  onAddCurrentClick,
 }: SearchResultProps) => {
   function handleAddShelfClick() {
-    addBookToNotion({
-      title,
-      subtitle,
-      authors: creators,
-      imgSrc,
-      genres,
-      ids,
-      year,
-    });
+    onAddShelfClick(mediaInfo);
   }
 
   function handleAddNextClick() {
-    addNextBookToNotion({
-      title,
-      subtitle,
-      authors: creators,
-      imgSrc,
-      genres,
-      ids,
-      year,
-    });
+    onAddNextClick(mediaInfo);
   }
 
   function handleRatingChange(rating: number) {
-    addFinishedBookToNotion(
-      {
-        title,
-        subtitle,
-        authors: creators,
-        imgSrc,
-        genres,
-        ids,
-        year,
-      },
-      rating
-    );
+    onRatingChange(mediaInfo, rating);
   }
 
   function handleAddCurrentClick() {
-    addCurrentBookToNotion({
-      title,
-      subtitle,
-      authors: creators,
-      imgSrc,
-      genres,
-      ids,
-      year,
-    });
+    onAddCurrentClick(mediaInfo);
   }
 
   return (
@@ -99,27 +53,29 @@ const SearchResult = ({
       <Image
         width={120}
         radius="md"
-        src={imgSrc}
+        src={mediaInfo.imgSrc}
         fit="contain"
         withPlaceholder
       />
       <Text fz="xl">
-        {showYearInTitle && year ? `${title} (${year})` : title}
+        {showYearInTitle && mediaInfo.year
+          ? `${mediaInfo.title} (${mediaInfo.year})`
+          : mediaInfo.title}
       </Text>
-      <Text fz="md">{subtitle}</Text>
-      {creators?.length ? (
-        <Text fz="lg">by {formatPeople(creators)}</Text>
+      <Text fz="md">{mediaInfo.subtitle}</Text>
+      {mediaInfo.creators?.length ? (
+        <Text fz="lg">by {formatPeople(mediaInfo.creators)}</Text>
       ) : null}
-      {starring?.length ? (
-        <Text fz="lg">starring {formatPeople(starring)}</Text>
+      {mediaInfo.starring?.length ? (
+        <Text fz="lg">starring {formatPeople(mediaInfo.starring)}</Text>
       ) : null}
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
-        handleAddShelfClick={handleAddShelfClick}
-        handleAddNextClick={handleAddNextClick}
-        handleRatingChange={handleRatingChange}
-        handleAddCurrentClick={handleAddCurrentClick}
+        onAddShelfClick={handleAddShelfClick}
+        onAddNextClick={handleAddNextClick}
+        onRatingChange={handleRatingChange}
+        onAddCurrentClick={handleAddCurrentClick}
       ></SearchResultButtons>
     </div>
   );

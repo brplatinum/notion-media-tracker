@@ -6,3 +6,7 @@ export interface MovieInfo {
   ids: string[];
   year?: string;
 }
+
+export interface AddMovieRequest {
+  movieInfo: MovieInfo;
+}

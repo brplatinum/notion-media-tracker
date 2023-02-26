@@ -1,5 +1,5 @@
 import { BookInfo } from "@backend/types/books-api";
-import { CallStatus } from "../types/services";
+import { CallStatus } from "../types/util";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 

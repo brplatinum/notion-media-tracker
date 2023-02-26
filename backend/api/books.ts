@@ -23,7 +23,7 @@ router.get("/search", async (req, res) => {
 
   const googleBooks = (await response.json()) as { items: GoogleBook[] };
 
-  const searchResults = googleBooks.items.map((bookItem) => {
+  const searchResults = googleBooks.items.slice(0, 8).map((bookItem) => {
     const isbn =
       bookItem.volumeInfo.industryIdentifiers?.find((industryIdentifier) => {
         return industryIdentifier.type === "ISBN_13";

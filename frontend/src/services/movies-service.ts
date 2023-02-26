@@ -1,6 +1,5 @@
-import { BookInfo } from "@backend/types/books-api";
 import { MovieInfo } from "@backend/types/movies-api";
-import { CallStatus } from "../types/services";
+import { CallStatus } from "../types/util";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -14,44 +13,44 @@ export const searchMovies = async (searchQuery: string) => {
   return response;
 };
 
-export const addBookToNotion = async (bookInfo: BookInfo) => {
-  await fetch(`${backendUrl}/books/add-to-shelf`, {
+export const addMovieToNotion = async (movieInfo: MovieInfo) => {
+  await fetch(`${backendUrl}/movies/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ movieInfo }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addNextBookToNotion = async (bookInfo: BookInfo) => {
-  await fetch(`${backendUrl}/books/read-next`, {
+export const addNextMovieToNotion = async (movieInfo: MovieInfo) => {
+  await fetch(`${backendUrl}/movies/watch-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ movieInfo }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addFinishedBookToNotion = async (
-  bookInfo: BookInfo,
+export const addFinishedMovieToNotion = async (
+  movieInfo: MovieInfo,
   rating: number
 ) => {
-  await fetch(`${backendUrl}/books/finished`, {
+  await fetch(`${backendUrl}/movies/finished`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo, rating: (rating * 2).toString() }),
+    body: JSON.stringify({ movieInfo, rating: (rating * 2).toString() }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addCurrentBookToNotion = async (bookInfo: BookInfo) => {
-  await fetch(`${backendUrl}/books/currently-reading`, {
+export const addCurrentMovieToNotion = async (movieInfo: MovieInfo) => {
+  await fetch(`${backendUrl}/movies/currently-watching`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ movieInfo }),
   });
 
   return CallStatus.SUCCESS;

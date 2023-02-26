@@ -2,8 +2,39 @@ import { BookInfo } from "@backend/types/books-api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
-import { searchBooks } from "../services/books-service";
+import {
+  addBookToNotion,
+  addCurrentBookToNotion,
+  addFinishedBookToNotion,
+  addNextBookToNotion,
+  searchBooks,
+} from "../services/books-service";
+import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
+
+const convertBookInfoToMediaInfo = (bookInfo: BookInfo): MediaInfo => {
+  return {
+    title: bookInfo.title,
+    subtitle: bookInfo.subtitle,
+    creators: bookInfo.authors,
+    imgSrc: bookInfo.imgSrc,
+    genres: bookInfo.genres,
+    ids: bookInfo.ids,
+    year: bookInfo.year,
+  };
+};
+
+const convertMediaInfoToBookInfo = (mediaInfo: MediaInfo): BookInfo => {
+  return {
+    title: mediaInfo.title,
+    subtitle: mediaInfo.subtitle,
+    authors: mediaInfo.creators,
+    imgSrc: mediaInfo.imgSrc,
+    genres: mediaInfo.genres,
+    ids: mediaInfo.ids,
+    year: mediaInfo.year,
+  };
+};
 
 const BookSearch = () => {
   const [inputValue, setInputValue] = useState("");
@@ -22,6 +53,22 @@ const BookSearch = () => {
     if (event.key === "Enter") {
       handleSearchClick();
     }
+  };
+
+  const handleAddShelfClick = (mediaInfo: MediaInfo) => {
+    addBookToNotion(convertMediaInfoToBookInfo(mediaInfo));
+  };
+
+  const handleAddNextClick = (mediaInfo: MediaInfo) => {
+    addNextBookToNotion(convertMediaInfoToBookInfo(mediaInfo));
+  };
+
+  const handleRatingChange = (mediaInfo: MediaInfo, rating: number) => {
+    addFinishedBookToNotion(convertMediaInfoToBookInfo(mediaInfo), rating);
+  };
+
+  const handleAddCurrentClick = (mediaInfo: MediaInfo) => {
+    addCurrentBookToNotion(convertMediaInfoToBookInfo(mediaInfo));
   };
 
   return (
@@ -45,14 +92,12 @@ const BookSearch = () => {
       {retrievedBooks.map((bookResult) => {
         return (
           <SearchResult
-            title={bookResult.title}
-            subtitle={bookResult.subtitle}
-            authors={bookResult.authors}
-            imgSrc={bookResult.imgSrc}
-            genres={bookResult.genres}
-            ids={bookResult.ids}
-            year={bookResult.year}
+            mediaInfo={convertBookInfoToMediaInfo(bookResult)}
             key={`${Math.random()}`}
+            onAddShelfClick={handleAddShelfClick}
+            onAddNextClick={handleAddNextClick}
+            onRatingChange={handleRatingChange}
+            onAddCurrentClick={handleAddCurrentClick}
           />
         );
       })}

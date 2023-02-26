@@ -2,8 +2,37 @@ import { MovieInfo } from "@backend/types/movies-api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
-import { searchMovies } from "../services/movies-service";
+import {
+  addCurrentMovieToNotion,
+  addFinishedMovieToNotion,
+  addMovieToNotion,
+  addNextMovieToNotion,
+  searchMovies,
+} from "../services/movies-service";
+import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
+
+const convertMovieInfoToMediaInfo = (movieInfo: MovieInfo): MediaInfo => {
+  return {
+    title: movieInfo.title,
+    creators: movieInfo.directors,
+    starring: movieInfo.starring,
+    imgSrc: movieInfo.imgSrc,
+    ids: movieInfo.ids,
+    year: movieInfo.year,
+  };
+};
+
+const convertMediaInfoToMovieInfo = (mediaInfo: MediaInfo): MovieInfo => {
+  return {
+    title: mediaInfo.title,
+    directors: mediaInfo.creators,
+    starring: mediaInfo.starring,
+    imgSrc: mediaInfo.imgSrc,
+    ids: mediaInfo.ids,
+    year: mediaInfo.year,
+  };
+};
 
 const MovieSearch = () => {
   const [inputValue, setInputValue] = useState("");
@@ -22,6 +51,22 @@ const MovieSearch = () => {
     if (event.key === "Enter") {
       handleSearchClick();
     }
+  };
+
+  const handleAddShelfClick = (mediaInfo: MediaInfo) => {
+    addMovieToNotion(convertMediaInfoToMovieInfo(mediaInfo));
+  };
+
+  const handleAddNextClick = (mediaInfo: MediaInfo) => {
+    addNextMovieToNotion(convertMediaInfoToMovieInfo(mediaInfo));
+  };
+
+  const handleRatingChange = (mediaInfo: MediaInfo, rating: number) => {
+    addFinishedMovieToNotion(convertMediaInfoToMovieInfo(mediaInfo), rating);
+  };
+
+  const handleAddCurrentClick = (mediaInfo: MediaInfo) => {
+    addCurrentMovieToNotion(convertMediaInfoToMovieInfo(mediaInfo));
   };
 
   return (
@@ -45,14 +90,13 @@ const MovieSearch = () => {
       {retrievedMovies.map((movieResult) => {
         return (
           <SearchResult
-            title={movieResult.title}
-            creators={movieResult.directors}
-            starring={movieResult.starring}
-            imgSrc={movieResult.imgSrc}
-            ids={movieResult.ids}
-            year={movieResult.year}
+            mediaInfo={convertMovieInfoToMediaInfo(movieResult)}
             key={`${Math.random()}`}
             showYearInTitle
+            onAddShelfClick={handleAddShelfClick}
+            onAddNextClick={handleAddNextClick}
+            onRatingChange={handleRatingChange}
+            onAddCurrentClick={handleAddCurrentClick}
           />
         );
       })}
