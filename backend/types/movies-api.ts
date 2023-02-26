@@ -10,3 +10,8 @@ export interface MovieInfo {
 export interface AddMovieRequest {
   movieInfo: MovieInfo;
 }
+
+export interface FinishedMovieRequest {
+  movieInfo: MovieInfo;
+  rating: string;
+}

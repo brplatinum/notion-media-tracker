@@ -1,4 +1,8 @@
-import { AddMovieRequest, MovieInfo } from "@backend/types/movies-api";
+import {
+  AddMovieRequest,
+  FinishedMovieRequest,
+  MovieInfo,
+} from "@backend/types/movies-api";
 import {
   TmdbMovie,
   TmdbMovieCredits,
@@ -120,104 +124,191 @@ router.post("/add-to-shelf", async (req, res) => {
   res.sendStatus(200);
 });
 
-// router.post("/read-next", async (req, res) => {
-//   const addBookRequest = req.body as AddBookRequest;
-//   const properties = generateCreatePageProperties(addBookRequest);
+router.post("/watch-next", async (req, res) => {
+  const addMovieRequest = req.body as AddMovieRequest;
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Up Next",
-//     },
-//   };
+  const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieResponse = await fetch(
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
-//   if (addBookRequest.bookInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: addBookRequest.bookInfo.imgSrc,
-//       },
-//     };
+  if (tmdbMovieDetails.imdb_id) {
+    addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+  }
 
-//   await notion.pages.create(createPageParameters);
+  const properties = generateCreatePageProperties(addMovieRequest);
 
-//   res.sendStatus(200);
-// });
+  if (tmdbMovieDetails.genres) {
+    properties["Genre(s)"] = {
+      multi_select: tmdbMovieDetails.genres
+        .filter((genreDetails) => {
+          return genreDetails.name;
+        })
+        .map((genreDetails) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return { name: genreDetails.name! };
+        }),
+    };
+  }
 
-// router.post("/finished", async (req, res) => {
-//   const finishedBookRequest = req.body as FinishedBookRequest;
-//   const properties = generateCreatePageProperties(finishedBookRequest);
+  properties["Status"] = {
+    status: {
+      name: "Up Next",
+    },
+  };
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Finished",
-//     },
-//   };
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
 
-//   properties["Rating /10"] = {
-//     select: {
-//       name: finishedBookRequest.rating,
-//     },
-//   };
+  if (addMovieRequest.movieInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addMovieRequest.movieInfo.imgSrc,
+      },
+    };
 
-//   properties["Finished Date"] = {
-//     date: {
-//       start: new Date().toISOString().split("T")[0],
-//     },
-//   };
+  await notion.pages.create(createPageParameters);
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  res.sendStatus(200);
+});
 
-//   if (finishedBookRequest.bookInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: finishedBookRequest.bookInfo.imgSrc,
-//       },
-//     };
+router.post("/finished", async (req, res) => {
+  const finishedMovieRequest = req.body as FinishedMovieRequest;
 
-//   await notion.pages.create(createPageParameters);
+  const movieId = finishedMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieResponse = await fetch(
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-//   res.sendStatus(200);
-// });
+  const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
-// router.post("/currently-reading", async (req, res) => {
-//   const finishedBookRequest = req.body as AddBookRequest;
-//   const properties = generateCreatePageProperties(finishedBookRequest);
+  if (tmdbMovieDetails.imdb_id) {
+    finishedMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+  }
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Reading",
-//     },
-//   };
+  const properties = generateCreatePageProperties(finishedMovieRequest);
 
-//   properties["Start Date"] = {
-//     date: {
-//       start: new Date().toISOString().split("T")[0],
-//     },
-//   };
+  if (tmdbMovieDetails.genres) {
+    properties["Genre(s)"] = {
+      multi_select: tmdbMovieDetails.genres
+        .filter((genreDetails) => {
+          return genreDetails.name;
+        })
+        .map((genreDetails) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return { name: genreDetails.name! };
+        }),
+    };
+  }
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  properties["Status"] = {
+    status: {
+      name: "Finished",
+    },
+  };
 
-//   if (finishedBookRequest.bookInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: finishedBookRequest.bookInfo.imgSrc,
-//       },
-//     };
+  properties["Rating /10"] = {
+    select: {
+      name: finishedMovieRequest.rating,
+    },
+  };
 
-//   await notion.pages.create(createPageParameters);
+  properties["Finished Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
 
-//   res.sendStatus(200);
-// });
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
+
+  if (finishedMovieRequest.movieInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: finishedMovieRequest.movieInfo.imgSrc,
+      },
+    };
+
+  await notion.pages.create(createPageParameters);
+
+  res.sendStatus(200);
+});
+
+router.post("/currently-watching", async (req, res) => {
+  const addMovieRequest = req.body as AddMovieRequest;
+
+  const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieResponse = await fetch(
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
+
+  const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
+
+  if (tmdbMovieDetails.imdb_id) {
+    addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+  }
+
+  const properties = generateCreatePageProperties(addMovieRequest);
+
+  if (tmdbMovieDetails.genres) {
+    properties["Genre(s)"] = {
+      multi_select: tmdbMovieDetails.genres
+        .filter((genreDetails) => {
+          return genreDetails.name;
+        })
+        .map((genreDetails) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return { name: genreDetails.name! };
+        }),
+    };
+  }
+
+  properties["Status"] = {
+    status: {
+      name: "Watching",
+    },
+  };
+
+  properties["Start Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
+
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
+
+  if (addMovieRequest.movieInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addMovieRequest.movieInfo.imgSrc,
+      },
+    };
+
+  await notion.pages.create(createPageParameters);
+
+  res.sendStatus(200);
+});
 
 function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
   const properties: CreatePageParameters["properties"] = {
