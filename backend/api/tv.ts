@@ -3,7 +3,7 @@ import {
   FinishedMovieRequest,
   MovieInfo,
 } from "@backend/types/movies-api";
-import { TmdbMovie, TmdbMovieCredits, TmdbSearch } from "@backend/types/tmdb";
+import { TmdbMovie, TmdbMovieCredits, TmdbTvSearch } from "@backend/types/tmdb";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
@@ -15,26 +15,23 @@ const notion = new Client({
 
 router.get("/search", async (req, res) => {
   const response = await fetch(
-    `https://api.themoviedb.org/3/search/movie?query=${req.query.search_query}`,
+    `https://api.themoviedb.org/3/search/tv?query=${req.query.search_query}`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
     }
   );
 
-  const movieSearchResponse = (await response.json()) as TmdbSearch;
+  const tvSearchResponse = (await response.json()) as TmdbTvSearch;
 
-  const searchResultsPromises = movieSearchResponse.results
+  const searchResultsPromises = tvSearchResponse.results
     ?.slice(0, 8)
-    .map(async (movieItem) => {
+    .map(async (tvItem) => {
       const creditsResponse = (await (
-        await fetch(
-          `https://api.themoviedb.org/3/movie/${movieItem.id}/credits`,
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-          }
-        )
+        await fetch(`https://api.themoviedb.org/3/tv/${tvItem.id}`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+        })
       ).json()) as TmdbMovieCredits;
 
       const directors = creditsResponse.crew
