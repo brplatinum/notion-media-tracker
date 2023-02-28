@@ -3,7 +3,11 @@ import {
   FinishedMovieRequest,
   MovieInfo,
 } from "@backend/types/movies-api";
-import { TmdbMovie, TmdbMovieCredits, TmdbSearch } from "@backend/types/tmdb";
+import {
+  TmdbMovie,
+  TmdbMovieCredits,
+  TmdbMovieSearch,
+} from "@backend/types/tmdb";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
@@ -22,7 +26,7 @@ router.get("/search", async (req, res) => {
     }
   );
 
-  const movieSearchResponse = (await response.json()) as TmdbSearch;
+  const movieSearchResponse = (await response.json()) as TmdbMovieSearch;
 
   const searchResultsPromises = movieSearchResponse.results
     ?.slice(0, 8)
@@ -38,11 +42,11 @@ router.get("/search", async (req, res) => {
       ).json()) as TmdbMovieCredits;
 
       const directors = creditsResponse.crew
-        ?.filter((crewDetails) => {
+        .filter((crewDetails) => {
           return crewDetails.job?.toLowerCase() === "director";
         })
         .map((directorDetails) => {
-          return directorDetails.name || "";
+          return directorDetails.name;
         });
 
       const starring = creditsResponse.cast?.slice(0, 3).map((castDetails) => {

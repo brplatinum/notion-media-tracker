@@ -1,5 +1,9 @@
 import { AddMovieRequest } from "@backend/types/movies-api";
-import { TmdbTv, TmdbTvCredits, TmdbTvSearch } from "@backend/types/tmdb";
+import {
+  TmdbTv,
+  TmdbTvAggregateCredits,
+  TmdbTvSearch,
+} from "@backend/types/tmdb";
 import { TvInfo } from "@backend/types/tv-api";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
@@ -31,28 +35,43 @@ router.get("/search", async (req, res) => {
         })
       ).json()) as TmdbTv;
 
-      const tvCast = (
-        (await (
-          await fetch(`https://api.themoviedb.org/3/tv/${tvItem.id}/credits`, {
+      const tvCredits = (await (
+        await fetch(
+          `https://api.themoviedb.org/3/tv/${tvItem.id}/aggregate_credits`,
+          {
             method: "GET",
             headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-          })
-        ).json()) as TmdbTvCredits
-      ).crew;
+          }
+        )
+      ).json()) as TmdbTvAggregateCredits;
 
       const genres = tvDetails.genres.map((genre) => {
         return genre.name;
       });
 
-      const starring = tvCast.slice(0, 3).map((castDetails) => {
+      const creators =
+        tvDetails.created_by.length > 0
+          ? tvDetails.created_by.map((createdBy) => {
+              return createdBy.name;
+            })
+          : tvCredits.crew
+              .filter((crewDetails) => {
+                const jobs = crewDetails.jobs.map((jobDetails) =>
+                  jobDetails.job.toLowerCase()
+                );
+                return jobs.includes("series director");
+              })
+              .map((directorDetails) => {
+                return directorDetails.name;
+              });
+
+      const starring = tvCredits.cast.slice(0, 3).map((castDetails) => {
         return castDetails.name;
       });
 
       return {
         title: tvItem.name,
-        creators: tvDetails.created_by.map((createdBy) => {
-          return createdBy.name;
-        }),
+        creators,
         starring,
         imgSrc: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${tvItem.poster_path}`,
         ids: [`tmdb:${tvItem.id}`],

@@ -1,17 +1,47 @@
-import { BookInfo } from "@backend/types/books-api";
+import { TvInfo } from "@backend/types/tv-api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
-import { searchBooks } from "../services/books-service";
+import {
+  addCurrentMovieToNotion,
+  addFinishedMovieToNotion,
+  addMovieToNotion,
+  addNextMovieToNotion,
+} from "../services/movies-service";
+import { searchTv } from "../services/tv-service";
+import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
+
+const convertTvInfoToMediaInfo = (tvInfo: TvInfo): MediaInfo => {
+  return {
+    title: tvInfo.title,
+    creators: tvInfo.creators,
+    starring: tvInfo.starring,
+    imgSrc: tvInfo.imgSrc,
+    ids: tvInfo.ids,
+    year: tvInfo.year,
+    genres: tvInfo.genres,
+  };
+};
+
+const convertMediaInfoToTvInfo = (mediaInfo: MediaInfo): TvInfo => {
+  return {
+    title: mediaInfo.title,
+    creators: mediaInfo.creators,
+    starring: mediaInfo.starring,
+    imgSrc: mediaInfo.imgSrc,
+    ids: mediaInfo.ids,
+    year: mediaInfo.year,
+    genres: mediaInfo.genres,
+  };
+};
 
 const TvSearch = () => {
   const [inputValue, setInputValue] = useState("");
-  const [retrievedBooks, setRetrievedBooks] = useState<BookInfo[]>([]);
+  const [retrievedTvShows, setRetrievedTvShows] = useState<TvInfo[]>([]);
 
   const handleSearchClick = async () => {
-    const books = await searchBooks(inputValue);
-    setRetrievedBooks(books);
+    setRetrievedTvShows(await searchTv(inputValue));
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +52,22 @@ const TvSearch = () => {
     if (event.key === "Enter") {
       handleSearchClick();
     }
+  };
+
+  const handleAddShelfClick = (mediaInfo: MediaInfo) => {
+    addMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
+  };
+
+  const handleAddNextClick = (mediaInfo: MediaInfo) => {
+    addNextMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
+  };
+
+  const handleRatingChange = (mediaInfo: MediaInfo, rating: number) => {
+    addFinishedMovieToNotion(convertMediaInfoToTvInfo(mediaInfo), rating);
+  };
+
+  const handleAddCurrentClick = (mediaInfo: MediaInfo) => {
+    addCurrentMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
   };
 
   return (
@@ -42,17 +88,16 @@ const TvSearch = () => {
         onChange={handleSearchChange}
         onKeyDown={handleEnterPress}
       />
-      {retrievedBooks.map((bookResult) => {
+      {retrievedTvShows.map((tvResult) => {
         return (
           <SearchResult
-            title={bookResult.title}
-            subtitle={bookResult.subtitle}
-            authors={bookResult.authors}
-            imgSrc={bookResult.imgSrc}
-            genres={bookResult.genres}
-            ids={bookResult.ids}
-            year={bookResult.year}
+            mediaInfo={convertTvInfoToMediaInfo(tvResult)}
             key={`${Math.random()}`}
+            showYearInTitle
+            onAddShelfClick={handleAddShelfClick}
+            onAddNextClick={handleAddNextClick}
+            onRatingChange={handleRatingChange}
+            onAddCurrentClick={handleAddCurrentClick}
           />
         );
       })}

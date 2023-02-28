@@ -39,8 +39,8 @@ const MovieSearch = () => {
   const [retrievedMovies, setRetrievedMovies] = useState<MovieInfo[]>([]);
 
   const handleSearchClick = async () => {
-    const books = await searchMovies(inputValue);
-    setRetrievedMovies(books);
+    const movies = await searchMovies(inputValue);
+    setRetrievedMovies(movies);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {

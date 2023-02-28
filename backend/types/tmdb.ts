@@ -183,13 +183,13 @@ export interface TmdbMovieCast {
   order: number;
 }
 
-export interface TmdbTvCredits {
+export interface TmdbTvAggregateCredits {
   id: number;
-  cast: TmdbTvCast[];
-  crew: TmdbTvCrew[];
+  cast: TmdbAggregateTvCast[];
+  crew: TmdbAggregateTvCrew[];
 }
 
-export interface TmdbTvCrew {
+export interface TmdbAggregateTvCrew {
   adult: boolean;
   gender?: number;
   id: number;
@@ -198,12 +198,12 @@ export interface TmdbTvCrew {
   original_name: string;
   popularity: number;
   profile_path?: string;
-  credit_id: string;
+  jobs: { credit_id: string; job: string; episode_count: string }[];
   department: string;
-  job: string;
+  total_episode_count: number;
 }
 
-export interface TmdbTvCast {
+export interface TmdbAggregateTvCast {
   adult: boolean;
   gender?: number;
   id: number;
@@ -212,7 +212,7 @@ export interface TmdbTvCast {
   original_name: string;
   popularity: number;
   profile_path?: string;
-  character: string;
-  credit_id: string;
+  roles: { credit_id: string; character: string; episode_count: string }[];
+  total_episode_count: number;
   order: number;
 }
