@@ -1,4 +1,3 @@
-import { MovieInfo } from "@backend/types/movies-api";
 import { TvInfo } from "@backend/types/tv-api";
 import { CallStatus } from "../types/util";
 
@@ -14,44 +13,41 @@ export const searchTv = async (searchQuery: string) => {
   return response;
 };
 
-export const addMovieToNotion = async (movieInfo: MovieInfo) => {
-  await fetch(`${backendUrl}/movies/add-to-shelf`, {
+export const addTvToNotion = async (tvInfo: TvInfo) => {
+  await fetch(`${backendUrl}/tv/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ tvInfo }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addNextMovieToNotion = async (movieInfo: MovieInfo) => {
-  await fetch(`${backendUrl}/movies/watch-next`, {
+export const addNextTvToNotion = async (tvInfo: TvInfo) => {
+  await fetch(`${backendUrl}/tv/watch-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ tvInfo }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addFinishedMovieToNotion = async (
-  movieInfo: MovieInfo,
-  rating: number
-) => {
-  await fetch(`${backendUrl}/movies/finished`, {
+export const addFinishedTvToNotion = async (tvInfo: TvInfo, rating: number) => {
+  await fetch(`${backendUrl}/tv/finished`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo, rating: (rating * 2).toString() }),
+    body: JSON.stringify({ tvInfo, rating: (rating * 2).toString() }),
   });
 
   return CallStatus.SUCCESS;
 };
 
-export const addCurrentMovieToNotion = async (movieInfo: MovieInfo) => {
-  await fetch(`${backendUrl}/movies/currently-watching`, {
+export const addCurrentTvToNotion = async (tvInfo: TvInfo) => {
+  await fetch(`${backendUrl}/tv/currently-watching`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ tvInfo }),
   });
 
   return CallStatus.SUCCESS;

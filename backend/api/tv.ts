@@ -1,10 +1,10 @@
-import { AddMovieRequest } from "@backend/types/movies-api";
 import {
   TmdbTv,
   TmdbTvAggregateCredits,
+  TmdbTvExternalCredits,
   TmdbTvSearch,
 } from "@backend/types/tmdb";
-import { TvInfo } from "@backend/types/tv-api";
+import { AddTvRequest, FinishedTvRequest, TvInfo } from "@backend/types/tv-api";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
@@ -85,258 +85,210 @@ router.get("/search", async (req, res) => {
   res.status(200).json(searchResults);
 });
 
-// router.post("/add-to-shelf", async (req, res) => {
-//   const addMovieRequest = req.body as AddMovieRequest;
+router.post("/add-to-shelf", async (req, res) => {
+  const addTvRequest = req.body as AddTvRequest;
 
-//   const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
-//   const movieResponse = await fetch(
-//     `https://api.themoviedb.org/3/movie/${movieId}`,
-//     {
-//       method: "GET",
-//       headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-//     }
-//   );
+  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvExternalCreditsResponse = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-//   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
+  const tmdbTvExternalCredits =
+    (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
-//   if (tmdbMovieDetails.imdb_id) {
-//     addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
-//   }
+  if (tmdbTvExternalCredits.imdb_id) {
+    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+  }
 
-//   const properties = generateCreatePageProperties(addMovieRequest);
+  const properties = generateCreatePageProperties(addTvRequest);
 
-//   if (tmdbMovieDetails.genres) {
-//     properties["Genre(s)"] = {
-//       multi_select: tmdbMovieDetails.genres
-//         .filter((genreDetails) => {
-//           return genreDetails.name;
-//         })
-//         .map((genreDetails) => {
-//           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-//           return { name: genreDetails.name! };
-//         }),
-//     };
-//   }
+  properties["Status"] = {
+    status: {
+      name: "Backlog",
+    },
+  };
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Backlog",
-//     },
-//   };
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  if (addTvRequest.tvInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addTvRequest.tvInfo.imgSrc,
+      },
+    };
 
-//   if (addMovieRequest.movieInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: addMovieRequest.movieInfo.imgSrc,
-//       },
-//     };
+  await notion.pages.create(createPageParameters);
 
-//   await notion.pages.create(createPageParameters);
+  res.sendStatus(200);
+});
 
-//   res.sendStatus(200);
-// });
+router.post("/watch-next", async (req, res) => {
+  const addTvRequest = req.body as AddTvRequest;
 
-// router.post("/watch-next", async (req, res) => {
-//   const addMovieRequest = req.body as AddMovieRequest;
+  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvExternalCreditsResponse = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-//   const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
-//   const movieResponse = await fetch(
-//     `https://api.themoviedb.org/3/movie/${movieId}`,
-//     {
-//       method: "GET",
-//       headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-//     }
-//   );
+  const tmdbTvExternalCredits =
+    (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
-//   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
+  if (tmdbTvExternalCredits.imdb_id) {
+    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+  }
 
-//   if (tmdbMovieDetails.imdb_id) {
-//     addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
-//   }
+  const properties = generateCreatePageProperties(addTvRequest);
 
-//   const properties = generateCreatePageProperties(addMovieRequest);
+  properties["Status"] = {
+    status: {
+      name: "Up Next",
+    },
+  };
 
-//   if (tmdbMovieDetails.genres) {
-//     properties["Genre(s)"] = {
-//       multi_select: tmdbMovieDetails.genres
-//         .filter((genreDetails) => {
-//           return genreDetails.name;
-//         })
-//         .map((genreDetails) => {
-//           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-//           return { name: genreDetails.name! };
-//         }),
-//     };
-//   }
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Up Next",
-//     },
-//   };
+  if (addTvRequest.tvInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addTvRequest.tvInfo.imgSrc,
+      },
+    };
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  await notion.pages.create(createPageParameters);
 
-//   if (addMovieRequest.movieInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: addMovieRequest.movieInfo.imgSrc,
-//       },
-//     };
+  res.sendStatus(200);
+});
 
-//   await notion.pages.create(createPageParameters);
+router.post("/finished", async (req, res) => {
+  const finishedTvRequest = req.body as FinishedTvRequest;
 
-//   res.sendStatus(200);
-// });
+  const tvId = finishedTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvExternalCreditsResponse = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-// router.post("/finished", async (req, res) => {
-//   const finishedMovieRequest = req.body as FinishedMovieRequest;
+  const tmdbTvExternalCredits =
+    (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
-//   const movieId = finishedMovieRequest.movieInfo.ids[0].split(":")[1];
-//   const movieResponse = await fetch(
-//     `https://api.themoviedb.org/3/movie/${movieId}`,
-//     {
-//       method: "GET",
-//       headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-//     }
-//   );
+  if (tmdbTvExternalCredits.imdb_id) {
+    finishedTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+  }
 
-//   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
+  const properties = generateCreatePageProperties(finishedTvRequest);
 
-//   if (tmdbMovieDetails.imdb_id) {
-//     finishedMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
-//   }
+  properties["Status"] = {
+    status: {
+      name: "Finished",
+    },
+  };
 
-//   const properties = generateCreatePageProperties(finishedMovieRequest);
+  properties["Rating /10"] = {
+    select: {
+      name: finishedTvRequest.rating,
+    },
+  };
 
-//   if (tmdbMovieDetails.genres) {
-//     properties["Genre(s)"] = {
-//       multi_select: tmdbMovieDetails.genres
-//         .filter((genreDetails) => {
-//           return genreDetails.name;
-//         })
-//         .map((genreDetails) => {
-//           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-//           return { name: genreDetails.name! };
-//         }),
-//     };
-//   }
+  properties["Finished Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Finished",
-//     },
-//   };
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
 
-//   properties["Rating /10"] = {
-//     select: {
-//       name: finishedMovieRequest.rating,
-//     },
-//   };
+  if (finishedTvRequest.tvInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: finishedTvRequest.tvInfo.imgSrc,
+      },
+    };
 
-//   properties["Finished Date"] = {
-//     date: {
-//       start: new Date().toISOString().split("T")[0],
-//     },
-//   };
+  await notion.pages.create(createPageParameters);
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
+  res.sendStatus(200);
+});
 
-//   if (finishedMovieRequest.movieInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: finishedMovieRequest.movieInfo.imgSrc,
-//       },
-//     };
+router.post("/currently-watching", async (req, res) => {
+  const addTvRequest = req.body as AddTvRequest;
 
-//   await notion.pages.create(createPageParameters);
+  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvExternalCreditsResponse = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+    }
+  );
 
-//   res.sendStatus(200);
-// });
+  const tmdbTvExternalCredits =
+    (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
-// router.post("/currently-watching", async (req, res) => {
-//   const addMovieRequest = req.body as AddMovieRequest;
+  if (tmdbTvExternalCredits.imdb_id) {
+    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+  }
 
-//   const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
-//   const movieResponse = await fetch(
-//     `https://api.themoviedb.org/3/movie/${movieId}`,
-//     {
-//       method: "GET",
-//       headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
-//     }
-//   );
+  const properties = generateCreatePageProperties(addTvRequest);
 
-//   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
+  properties["Status"] = {
+    status: {
+      name: "Watching",
+    },
+  };
 
-//   if (tmdbMovieDetails.imdb_id) {
-//     addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
-//   }
+  properties["Start Date"] = {
+    date: {
+      start: new Date().toISOString().split("T")[0],
+    },
+  };
 
-//   const properties = generateCreatePageProperties(addMovieRequest);
+  const createPageParameters: CreatePageParameters = {
+    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    properties,
+  };
 
-//   if (tmdbMovieDetails.genres) {
-//     properties["Genre(s)"] = {
-//       multi_select: tmdbMovieDetails.genres
-//         .filter((genreDetails) => {
-//           return genreDetails.name;
-//         })
-//         .map((genreDetails) => {
-//           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-//           return { name: genreDetails.name! };
-//         }),
-//     };
-//   }
+  if (addTvRequest.tvInfo.imgSrc)
+    createPageParameters["cover"] = {
+      external: {
+        url: addTvRequest.tvInfo.imgSrc,
+      },
+    };
 
-//   properties["Status"] = {
-//     status: {
-//       name: "Watching",
-//     },
-//   };
+  await notion.pages.create(createPageParameters);
 
-//   properties["Start Date"] = {
-//     date: {
-//       start: new Date().toISOString().split("T")[0],
-//     },
-//   };
+  res.sendStatus(200);
+});
 
-//   const createPageParameters: CreatePageParameters = {
-//     parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
-//     properties,
-//   };
-
-//   if (addMovieRequest.movieInfo.imgSrc)
-//     createPageParameters["cover"] = {
-//       external: {
-//         url: addMovieRequest.movieInfo.imgSrc,
-//       },
-//     };
-
-//   await notion.pages.create(createPageParameters);
-
-//   res.sendStatus(200);
-// });
-
-function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
+function generateCreatePageProperties(addTvRequest: AddTvRequest) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
-      title: [{ text: { content: addMovieRequest.movieInfo.title } }],
+      title: [{ text: { content: addTvRequest.tvInfo.title } }],
     },
   };
 
   properties["Media Type"] = {
     select: {
-      name: "Movie",
+      name: "TV Show",
     },
   };
 
@@ -350,7 +302,7 @@ function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
     rich_text: [
       {
         text: {
-          content: addMovieRequest.movieInfo.ids
+          content: addTvRequest.tvInfo.ids
             .reduce((accumulator, id) => `${accumulator}${id} `, "")
             .trim(),
         },
@@ -358,21 +310,29 @@ function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
     ],
   };
 
-  if (addMovieRequest.movieInfo.directors) {
+  if (addTvRequest.tvInfo.creators) {
     properties["Author(s)"] = {
-      multi_select: addMovieRequest.movieInfo.directors.map((director) => {
-        if (director.includes(",")) {
-          const directorsSplit = director.split(",");
-          director = `${directorsSplit[1]} ${directorsSplit[0]}`;
+      multi_select: addTvRequest.tvInfo.creators.map((creator) => {
+        if (creator.includes(",")) {
+          const directorsSplit = creator.split(",");
+          creator = `${directorsSplit[1]} ${directorsSplit[0]}`;
         }
-        return { name: director };
+        return { name: creator };
       }),
     };
   }
 
-  if (addMovieRequest.movieInfo.year) {
+  if (addTvRequest.tvInfo.genres) {
+    properties["Genre(s)"] = {
+      multi_select: addTvRequest.tvInfo.genres.map((genre) => {
+        return { name: genre };
+      }),
+    };
+  }
+
+  if (addTvRequest.tvInfo.year) {
     properties["Year"] = {
-      rich_text: [{ text: { content: addMovieRequest.movieInfo.year } }],
+      rich_text: [{ text: { content: addTvRequest.tvInfo.year } }],
     };
   }
 

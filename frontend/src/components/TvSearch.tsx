@@ -3,12 +3,12 @@ import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 import {
-  addCurrentMovieToNotion,
-  addFinishedMovieToNotion,
-  addMovieToNotion,
-  addNextMovieToNotion,
-} from "../services/movies-service";
-import { searchTv } from "../services/tv-service";
+  addCurrentTvToNotion,
+  addFinishedTvToNotion,
+  addNextTvToNotion,
+  addTvToNotion,
+  searchTv,
+} from "../services/tv-service";
 import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
 
@@ -55,19 +55,19 @@ const TvSearch = () => {
   };
 
   const handleAddShelfClick = (mediaInfo: MediaInfo) => {
-    addMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
+    addTvToNotion(convertMediaInfoToTvInfo(mediaInfo));
   };
 
   const handleAddNextClick = (mediaInfo: MediaInfo) => {
-    addNextMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
+    addNextTvToNotion(convertMediaInfoToTvInfo(mediaInfo));
   };
 
   const handleRatingChange = (mediaInfo: MediaInfo, rating: number) => {
-    addFinishedMovieToNotion(convertMediaInfoToTvInfo(mediaInfo), rating);
+    addFinishedTvToNotion(convertMediaInfoToTvInfo(mediaInfo), rating);
   };
 
   const handleAddCurrentClick = (mediaInfo: MediaInfo) => {
-    addCurrentMovieToNotion(convertMediaInfoToTvInfo(mediaInfo));
+    addCurrentTvToNotion(convertMediaInfoToTvInfo(mediaInfo));
   };
 
   return (
