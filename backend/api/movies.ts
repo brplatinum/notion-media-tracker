@@ -1,8 +1,4 @@
-import {
-  AddMovieRequest,
-  FinishedMovieRequest,
-  MovieInfo,
-} from "@backend/types/movies-api";
+import { components } from "@backend/types/api";
 import {
   TmdbMovie,
   TmdbMovieCredits,
@@ -11,6 +7,10 @@ import {
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
+
+type Movie = components["schemas"]["Movie"];
+type AddMovieRequest = components["schemas"]["AddMovieRequest"];
+type FinishedMovieRequest = components["schemas"]["FinishedMovieRequest"];
 
 const router = express.Router();
 const notion = new Client({
@@ -60,10 +60,10 @@ router.get("/search", async (req, res) => {
         imgSrc: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieItem.poster_path}`,
         ids: [`tmdb:${movieItem.id}`],
         year: movieItem.release_date?.split("-")[0],
-      } as MovieInfo;
+      } as Movie;
     });
 
-  const searchResults = await Promise.all(searchResultsPromises!);
+  const searchResults = await Promise.all(searchResultsPromises);
 
   res.status(200).json(searchResults);
 });
@@ -71,7 +71,7 @@ router.get("/search", async (req, res) => {
 router.post("/add-to-shelf", async (req, res) => {
   const addMovieRequest = req.body as AddMovieRequest;
 
-  const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieId = addMovieRequest.movie.ids[0].split(":")[1];
   const movieResponse = await fetch(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
@@ -83,7 +83,7 @@ router.post("/add-to-shelf", async (req, res) => {
   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
   if (tmdbMovieDetails.imdb_id) {
-    addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+    addMovieRequest.movie.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addMovieRequest);
@@ -112,22 +112,22 @@ router.post("/add-to-shelf", async (req, res) => {
     properties,
   };
 
-  if (addMovieRequest.movieInfo.imgSrc)
+  if (addMovieRequest.movie.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addMovieRequest.movieInfo.imgSrc,
+        url: addMovieRequest.movie.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/watch-next", async (req, res) => {
   const addMovieRequest = req.body as AddMovieRequest;
 
-  const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieId = addMovieRequest.movie.ids[0].split(":")[1];
   const movieResponse = await fetch(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
@@ -139,7 +139,7 @@ router.post("/watch-next", async (req, res) => {
   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
   if (tmdbMovieDetails.imdb_id) {
-    addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+    addMovieRequest.movie.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addMovieRequest);
@@ -168,22 +168,22 @@ router.post("/watch-next", async (req, res) => {
     properties,
   };
 
-  if (addMovieRequest.movieInfo.imgSrc)
+  if (addMovieRequest.movie.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addMovieRequest.movieInfo.imgSrc,
+        url: addMovieRequest.movie.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/finished", async (req, res) => {
   const finishedMovieRequest = req.body as FinishedMovieRequest;
 
-  const movieId = finishedMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieId = finishedMovieRequest.movie.ids[0].split(":")[1];
   const movieResponse = await fetch(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
@@ -195,7 +195,7 @@ router.post("/finished", async (req, res) => {
   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
   if (tmdbMovieDetails.imdb_id) {
-    finishedMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+    finishedMovieRequest.movie.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(finishedMovieRequest);
@@ -236,22 +236,22 @@ router.post("/finished", async (req, res) => {
     properties,
   };
 
-  if (finishedMovieRequest.movieInfo.imgSrc)
+  if (finishedMovieRequest.movie.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: finishedMovieRequest.movieInfo.imgSrc,
+        url: finishedMovieRequest.movie.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/currently-watching", async (req, res) => {
   const addMovieRequest = req.body as AddMovieRequest;
 
-  const movieId = addMovieRequest.movieInfo.ids[0].split(":")[1];
+  const movieId = addMovieRequest.movie.ids[0].split(":")[1];
   const movieResponse = await fetch(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
@@ -263,7 +263,7 @@ router.post("/currently-watching", async (req, res) => {
   const tmdbMovieDetails = (await movieResponse.json()) as TmdbMovie;
 
   if (tmdbMovieDetails.imdb_id) {
-    addMovieRequest.movieInfo.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
+    addMovieRequest.movie.ids.push(`imdb:${tmdbMovieDetails.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addMovieRequest);
@@ -298,22 +298,22 @@ router.post("/currently-watching", async (req, res) => {
     properties,
   };
 
-  if (addMovieRequest.movieInfo.imgSrc)
+  if (addMovieRequest.movie.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addMovieRequest.movieInfo.imgSrc,
+        url: addMovieRequest.movie.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
-      title: [{ text: { content: addMovieRequest.movieInfo.title } }],
+      title: [{ text: { content: addMovieRequest.movie.title } }],
     },
   };
 
@@ -333,7 +333,7 @@ function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
     rich_text: [
       {
         text: {
-          content: addMovieRequest.movieInfo.ids
+          content: addMovieRequest.movie.ids
             .reduce((accumulator, id) => `${accumulator}${id} `, "")
             .trim(),
         },
@@ -341,9 +341,9 @@ function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
     ],
   };
 
-  if (addMovieRequest.movieInfo.directors) {
+  if (addMovieRequest.movie.directors) {
     properties["Author(s)"] = {
-      multi_select: addMovieRequest.movieInfo.directors.map((director) => {
+      multi_select: addMovieRequest.movie.directors.map((director) => {
         if (director.includes(",")) {
           const directorsSplit = director.split(",");
           director = `${directorsSplit[1]} ${directorsSplit[0]}`;
@@ -353,9 +353,9 @@ function generateCreatePageProperties(addMovieRequest: AddMovieRequest) {
     };
   }
 
-  if (addMovieRequest.movieInfo.year) {
+  if (addMovieRequest.movie.year) {
     properties["Year"] = {
-      rich_text: [{ text: { content: addMovieRequest.movieInfo.year } }],
+      rich_text: [{ text: { content: addMovieRequest.movie.year } }],
     };
   }
 

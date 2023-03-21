@@ -1,4 +1,4 @@
-import { TvInfo } from "@backend/types/tv-api";
+import { components } from "@backend/types/api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
@@ -12,7 +12,9 @@ import {
 import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
 
-const convertTvInfoToMediaInfo = (tvInfo: TvInfo): MediaInfo => {
+type TvShow = components["schemas"]["TvShow"];
+
+const convertTvInfoToMediaInfo = (tvInfo: TvShow): MediaInfo => {
   return {
     title: tvInfo.title,
     creators: tvInfo.creators,
@@ -24,7 +26,7 @@ const convertTvInfoToMediaInfo = (tvInfo: TvInfo): MediaInfo => {
   };
 };
 
-const convertMediaInfoToTvInfo = (mediaInfo: MediaInfo): TvInfo => {
+const convertMediaInfoToTvInfo = (mediaInfo: MediaInfo): TvShow => {
   return {
     title: mediaInfo.title,
     creators: mediaInfo.creators,
@@ -38,7 +40,7 @@ const convertMediaInfoToTvInfo = (mediaInfo: MediaInfo): TvInfo => {
 
 const TvSearch = () => {
   const [inputValue, setInputValue] = useState("");
-  const [retrievedTvShows, setRetrievedTvShows] = useState<TvInfo[]>([]);
+  const [retrievedTvShows, setRetrievedTvShows] = useState<TvShow[]>([]);
 
   const handleSearchClick = async () => {
     setRetrievedTvShows(await searchTv(inputValue));

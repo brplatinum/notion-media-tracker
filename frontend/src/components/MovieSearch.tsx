@@ -1,4 +1,4 @@
-import { MovieInfo } from "@backend/types/movies-api";
+import { components } from "@backend/types/api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
@@ -12,7 +12,9 @@ import {
 import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
 
-const convertMovieInfoToMediaInfo = (movieInfo: MovieInfo): MediaInfo => {
+type Movie = components["schemas"]["Movie"];
+
+const convertMovieInfoToMediaInfo = (movieInfo: Movie): MediaInfo => {
   return {
     title: movieInfo.title,
     creators: movieInfo.directors,
@@ -23,7 +25,7 @@ const convertMovieInfoToMediaInfo = (movieInfo: MovieInfo): MediaInfo => {
   };
 };
 
-const convertMediaInfoToMovieInfo = (mediaInfo: MediaInfo): MovieInfo => {
+const convertMediaInfoToMovieInfo = (mediaInfo: MediaInfo): Movie => {
   return {
     title: mediaInfo.title,
     directors: mediaInfo.creators,
@@ -36,7 +38,7 @@ const convertMediaInfoToMovieInfo = (mediaInfo: MediaInfo): MovieInfo => {
 
 const MovieSearch = () => {
   const [inputValue, setInputValue] = useState("");
-  const [retrievedMovies, setRetrievedMovies] = useState<MovieInfo[]>([]);
+  const [retrievedMovies, setRetrievedMovies] = useState<Movie[]>([]);
 
   const handleSearchClick = async () => {
     const movies = await searchMovies(inputValue);

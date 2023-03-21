@@ -1,19 +1,22 @@
-import { BookInfo } from "@backend/types/books-api";
+import { components } from "@backend/types/api";
 import { CallStatus } from "../types/util";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
-export const searchBooks = async (searchQuery: string): Promise<BookInfo[]> => {
+type Book = components["schemas"]["Book"];
+type BookResults = components["schemas"]["BookResults"];
+
+export const searchBooks = async (searchQuery: string) => {
   const response = (await (
     await fetch(`${backendUrl}/books/search?search_query=${searchQuery}`, {
       method: "GET",
     })
-  ).json()) as BookInfo[];
+  ).json()) as BookResults;
 
   return response;
 };
 
-export const addBookToNotion = async (bookInfo: BookInfo) => {
+export const addBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,7 +26,7 @@ export const addBookToNotion = async (bookInfo: BookInfo) => {
   return CallStatus.SUCCESS;
 };
 
-export const addNextBookToNotion = async (bookInfo: BookInfo) => {
+export const addNextBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/read-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -34,7 +37,7 @@ export const addNextBookToNotion = async (bookInfo: BookInfo) => {
 };
 
 export const addFinishedBookToNotion = async (
-  bookInfo: BookInfo,
+  bookInfo: Book,
   rating: number
 ) => {
   await fetch(`${backendUrl}/books/finished`, {
@@ -46,7 +49,7 @@ export const addFinishedBookToNotion = async (
   return CallStatus.SUCCESS;
 };
 
-export const addCurrentBookToNotion = async (bookInfo: BookInfo) => {
+export const addCurrentBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/currently-reading`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -1,13 +1,17 @@
+import { components } from "@backend/types/api";
 import {
   TmdbTv,
   TmdbTvAggregateCredits,
   TmdbTvExternalCredits,
   TmdbTvSearch,
 } from "@backend/types/tmdb";
-import { AddTvRequest, FinishedTvRequest, TvInfo } from "@backend/types/tv-api";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
+
+type TvShow = components["schemas"]["TvShow"];
+type AddTvShowRequest = components["schemas"]["AddTvShowRequest"];
+type FinishedTvShowRequest = components["schemas"]["FinishedTvShowRequest"];
 
 const router = express.Router();
 const notion = new Client({
@@ -27,7 +31,7 @@ router.get("/search", async (req, res) => {
 
   const searchResultsPromises = tvSearchResponse.results
     ?.slice(0, 8)
-    .map(async (tvItem): Promise<TvInfo> => {
+    .map(async (tvItem): Promise<TvShow> => {
       const tvDetails = (await (
         await fetch(`https://api.themoviedb.org/3/tv/${tvItem.id}`, {
           method: "GET",
@@ -86,9 +90,9 @@ router.get("/search", async (req, res) => {
 });
 
 router.post("/add-to-shelf", async (req, res) => {
-  const addTvRequest = req.body as AddTvRequest;
+  const addTvRequest = req.body as AddTvShowRequest;
 
-  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvId = addTvRequest.tvShow.ids[0].split(":")[1];
   const tvExternalCreditsResponse = await fetch(
     `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
     {
@@ -101,7 +105,7 @@ router.post("/add-to-shelf", async (req, res) => {
     (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
   if (tmdbTvExternalCredits.imdb_id) {
-    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+    addTvRequest.tvShow.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addTvRequest);
@@ -117,10 +121,10 @@ router.post("/add-to-shelf", async (req, res) => {
     properties,
   };
 
-  if (addTvRequest.tvInfo.imgSrc)
+  if (addTvRequest.tvShow.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addTvRequest.tvInfo.imgSrc,
+        url: addTvRequest.tvShow.imgSrc,
       },
     };
 
@@ -130,9 +134,9 @@ router.post("/add-to-shelf", async (req, res) => {
 });
 
 router.post("/watch-next", async (req, res) => {
-  const addTvRequest = req.body as AddTvRequest;
+  const addTvRequest = req.body as AddTvShowRequest;
 
-  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvId = addTvRequest.tvShow.ids[0].split(":")[1];
   const tvExternalCreditsResponse = await fetch(
     `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
     {
@@ -145,7 +149,7 @@ router.post("/watch-next", async (req, res) => {
     (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
   if (tmdbTvExternalCredits.imdb_id) {
-    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+    addTvRequest.tvShow.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addTvRequest);
@@ -161,10 +165,10 @@ router.post("/watch-next", async (req, res) => {
     properties,
   };
 
-  if (addTvRequest.tvInfo.imgSrc)
+  if (addTvRequest.tvShow.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addTvRequest.tvInfo.imgSrc,
+        url: addTvRequest.tvShow.imgSrc,
       },
     };
 
@@ -174,9 +178,9 @@ router.post("/watch-next", async (req, res) => {
 });
 
 router.post("/finished", async (req, res) => {
-  const finishedTvRequest = req.body as FinishedTvRequest;
+  const finishedTvRequest = req.body as FinishedTvShowRequest;
 
-  const tvId = finishedTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvId = finishedTvRequest.tvShow.ids[0].split(":")[1];
   const tvExternalCreditsResponse = await fetch(
     `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
     {
@@ -189,7 +193,7 @@ router.post("/finished", async (req, res) => {
     (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
   if (tmdbTvExternalCredits.imdb_id) {
-    finishedTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+    finishedTvRequest.tvShow.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(finishedTvRequest);
@@ -217,10 +221,10 @@ router.post("/finished", async (req, res) => {
     properties,
   };
 
-  if (finishedTvRequest.tvInfo.imgSrc)
+  if (finishedTvRequest.tvShow.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: finishedTvRequest.tvInfo.imgSrc,
+        url: finishedTvRequest.tvShow.imgSrc,
       },
     };
 
@@ -230,9 +234,9 @@ router.post("/finished", async (req, res) => {
 });
 
 router.post("/currently-watching", async (req, res) => {
-  const addTvRequest = req.body as AddTvRequest;
+  const addTvRequest = req.body as AddTvShowRequest;
 
-  const tvId = addTvRequest.tvInfo.ids[0].split(":")[1];
+  const tvId = addTvRequest.tvShow.ids[0].split(":")[1];
   const tvExternalCreditsResponse = await fetch(
     `https://api.themoviedb.org/3/tv/${tvId}/external_ids`,
     {
@@ -245,7 +249,7 @@ router.post("/currently-watching", async (req, res) => {
     (await tvExternalCreditsResponse.json()) as TmdbTvExternalCredits;
 
   if (tmdbTvExternalCredits.imdb_id) {
-    addTvRequest.tvInfo.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
+    addTvRequest.tvShow.ids.push(`imdb:${tmdbTvExternalCredits.imdb_id}`);
   }
 
   const properties = generateCreatePageProperties(addTvRequest);
@@ -267,10 +271,10 @@ router.post("/currently-watching", async (req, res) => {
     properties,
   };
 
-  if (addTvRequest.tvInfo.imgSrc)
+  if (addTvRequest.tvShow.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addTvRequest.tvInfo.imgSrc,
+        url: addTvRequest.tvShow.imgSrc,
       },
     };
 
@@ -279,10 +283,10 @@ router.post("/currently-watching", async (req, res) => {
   res.sendStatus(200);
 });
 
-function generateCreatePageProperties(addTvRequest: AddTvRequest) {
+function generateCreatePageProperties(addTvRequest: AddTvShowRequest) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
-      title: [{ text: { content: addTvRequest.tvInfo.title } }],
+      title: [{ text: { content: addTvRequest.tvShow.title } }],
     },
   };
 
@@ -302,7 +306,7 @@ function generateCreatePageProperties(addTvRequest: AddTvRequest) {
     rich_text: [
       {
         text: {
-          content: addTvRequest.tvInfo.ids
+          content: addTvRequest.tvShow.ids
             .reduce((accumulator, id) => `${accumulator}${id} `, "")
             .trim(),
         },
@@ -310,9 +314,9 @@ function generateCreatePageProperties(addTvRequest: AddTvRequest) {
     ],
   };
 
-  if (addTvRequest.tvInfo.creators) {
+  if (addTvRequest.tvShow.creators) {
     properties["Author(s)"] = {
-      multi_select: addTvRequest.tvInfo.creators.map((creator) => {
+      multi_select: addTvRequest.tvShow.creators.map((creator) => {
         if (creator.includes(",")) {
           const directorsSplit = creator.split(",");
           creator = `${directorsSplit[1]} ${directorsSplit[0]}`;
@@ -322,17 +326,17 @@ function generateCreatePageProperties(addTvRequest: AddTvRequest) {
     };
   }
 
-  if (addTvRequest.tvInfo.genres) {
+  if (addTvRequest.tvShow.genres) {
     properties["Genre(s)"] = {
-      multi_select: addTvRequest.tvInfo.genres.map((genre) => {
+      multi_select: addTvRequest.tvShow.genres.map((genre) => {
         return { name: genre };
       }),
     };
   }
 
-  if (addTvRequest.tvInfo.year) {
+  if (addTvRequest.tvShow.year) {
     properties["Year"] = {
-      rich_text: [{ text: { content: addTvRequest.tvInfo.year } }],
+      rich_text: [{ text: { content: addTvRequest.tvShow.year } }],
     };
   }
 

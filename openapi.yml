@@ -7,7 +7,7 @@ servers:
 components:
   schemas:
     Book:
-      type: array
+      type: object
       properties:
         title:
           type: string
@@ -43,6 +43,130 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Book"
+    AddBookRequest:
+      type: object
+      properties:
+        book:
+          $ref: "#/components/schemas/Book"
+      required:
+        - book
+    FinishedBookRequest:
+      allOf:
+        - $ref: "#/components/schemas/AddBookRequest"
+        - type: object
+          properties:
+            rating:
+              type: string
+              example: 5
+          required:
+            - rating
+    Movie:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Movie Title
+        directors:
+          type: array
+          items:
+            type: string
+          example: [John Johnson, James Jameson]
+        starring:
+          type: array
+          items:
+            type: string
+          example: [Mike Michaelson, Samuel Samson]
+        imgSrc:
+          type: string
+          example: https://example.com/example.png
+        ids:
+          type: array
+          items:
+            type: string
+          example: [tmdb:101, imdb:2000]
+        year:
+          type: string
+          example: 2012
+      required:
+        - title
+        - ids
+    MovieResults:
+      type: array
+      items:
+        $ref: "#/components/schemas/Movie"
+    AddMovieRequest:
+      type: object
+      properties:
+        movie:
+          $ref: "#/components/schemas/Movie"
+      required:
+        - movie
+    FinishedMovieRequest:
+      allOf:
+        - $ref: "#/components/schemas/AddMovieRequest"
+        - type: object
+          properties:
+            rating:
+              type: string
+              example: 5
+          required:
+            - rating
+    TvShow:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Movie Title
+        creators:
+          type: array
+          items:
+            type: string
+          example: [John Johnson, James Jameson]
+        starring:
+          type: array
+          items:
+            type: string
+          example: [Mike Michaelson, Samuel Samson]
+        imgSrc:
+          type: string
+          example: https://example.com/example.png
+        ids:
+          type: array
+          items:
+            type: string
+          example: [tmdb:101, imdb:2000]
+        year:
+          type: string
+          example: 2012
+        genres:
+          type: array
+          items:
+            type: string
+          example: [Crime, Comedy]
+      required:
+        - title
+        - ids
+    TvShowResults:
+      type: array
+      items:
+        $ref: "#/components/schemas/TvShow"
+    AddTvShowRequest:
+      type: object
+      properties:
+        tvShow:
+          $ref: "#/components/schemas/TvShow"
+      required:
+        - tvShow
+    FinishedTvShowRequest:
+      allOf:
+        - $ref: "#/components/schemas/AddTvShowRequest"
+        - type: object
+          properties:
+            rating:
+              type: string
+              example: 5
+          required:
+            - rating
 paths:
   /books/search:
     get:
@@ -58,3 +182,163 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BookResults"
+  /books/add-to-shelf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddBookRequest"
+      responses:
+        "201":
+          description: Created
+  /books/read-next:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddBookRequest"
+      responses:
+        "201":
+          description: Created
+  /books/finished:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinishedBookRequest"
+      responses:
+        "201":
+          description: Created
+  /books/currently-reading:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddBookRequest"
+      responses:
+        "201":
+          description: Created
+  /movies/search:
+    get:
+      parameters:
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MovieResults"
+  /movies/add-to-shelf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMovieRequest"
+      responses:
+        "201":
+          description: Created
+  /movies/watch-next:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMovieRequest"
+      responses:
+        "201":
+          description: Created
+  /movies/finished:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinishedMovieRequest"
+      responses:
+        "201":
+          description: Created
+  /movies/currently-watching:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMovieRequest"
+      responses:
+        "201":
+          description: Created
+  /tv/search:
+    get:
+      parameters:
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TvShowResults"
+  /tv/add-to-shelf:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTvShowRequest"
+      responses:
+        "201":
+          description: Created
+  /tv/watch-next:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTvShowRequest"
+      responses:
+        "201":
+          description: Created
+  /tv/finished:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinishedTvShowRequest"
+      responses:
+        "201":
+          description: Created
+  /tv/currently-watching:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTvShowRequest"
+      responses:
+        "201":
+          description: Created

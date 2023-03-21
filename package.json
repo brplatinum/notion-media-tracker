@@ -10,7 +10,8 @@
     "dev-frontend": "vite",
     "dev-backend": "concurrently \"tsc -w\" \"nodemon -r dotenv/config dist/backend/server.js\"",
     "build": "rimraf dist && tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "openapi": "npx openapi-typescript openapi.yml --output ./backend/types/api.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -37,6 +38,7 @@
     "eslint": "^8.34.0",
     "eslint-plugin-react": "^7.32.2",
     "nodemon": "^2.0.20",
+    "openapi-typescript": "^6.2.0",
     "rimraf": "^4.1.2",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"

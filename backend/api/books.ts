@@ -1,12 +1,12 @@
-import {
-  AddBookRequest,
-  BookInfo,
-  FinishedBookRequest,
-} from "@backend/types/books-api";
+import { components } from "@backend/types/api";
 import { GoogleBook } from "@backend/types/google-books";
 import { Client } from "@notionhq/client";
 import { CreatePageParameters } from "@notionhq/client/build/src/api-endpoints";
 import express from "express";
+
+type Book = components["schemas"]["Book"];
+type AddBookRequest = components["schemas"]["AddBookRequest"];
+type FinishedBookRequest = components["schemas"]["FinishedBookRequest"];
 
 const router = express.Router();
 const notion = new Client({
@@ -44,7 +44,7 @@ router.get("/search", async (req, res) => {
       genres: bookItem.volumeInfo.categories,
       ids,
       year: bookItem.volumeInfo.publishedDate?.split("-")[0],
-    } as BookInfo;
+    } as Book;
   });
 
   res.status(200).json(searchResults);
@@ -65,16 +65,16 @@ router.post("/add-to-shelf", async (req, res) => {
     properties,
   };
 
-  if (addBookRequest.bookInfo.imgSrc)
+  if (addBookRequest.book.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addBookRequest.bookInfo.imgSrc,
+        url: addBookRequest.book.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/read-next", async (req, res) => {
@@ -92,16 +92,16 @@ router.post("/read-next", async (req, res) => {
     properties,
   };
 
-  if (addBookRequest.bookInfo.imgSrc)
+  if (addBookRequest.book.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: addBookRequest.bookInfo.imgSrc,
+        url: addBookRequest.book.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/finished", async (req, res) => {
@@ -131,16 +131,16 @@ router.post("/finished", async (req, res) => {
     properties,
   };
 
-  if (finishedBookRequest.bookInfo.imgSrc)
+  if (finishedBookRequest.book.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: finishedBookRequest.bookInfo.imgSrc,
+        url: finishedBookRequest.book.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 router.post("/currently-reading", async (req, res) => {
@@ -164,16 +164,16 @@ router.post("/currently-reading", async (req, res) => {
     properties,
   };
 
-  if (finishedBookRequest.bookInfo.imgSrc)
+  if (finishedBookRequest.book.imgSrc)
     createPageParameters["cover"] = {
       external: {
-        url: finishedBookRequest.bookInfo.imgSrc,
+        url: finishedBookRequest.book.imgSrc,
       },
     };
 
   await notion.pages.create(createPageParameters);
 
-  res.sendStatus(200);
+  res.sendStatus(201);
 });
 
 function generateCreatePageProperties(
@@ -181,7 +181,7 @@ function generateCreatePageProperties(
 ) {
   const properties: CreatePageParameters["properties"] = {
     Title: {
-      title: [{ text: { content: addBookRequest.bookInfo.title } }],
+      title: [{ text: { content: addBookRequest.book.title } }],
     },
   };
 
@@ -201,7 +201,7 @@ function generateCreatePageProperties(
     rich_text: [
       {
         text: {
-          content: addBookRequest.bookInfo.ids
+          content: addBookRequest.book.ids
             .reduce((accumulator, id) => `${accumulator}${id} `, "")
             .trim(),
         },
@@ -209,9 +209,9 @@ function generateCreatePageProperties(
     ],
   };
 
-  if (addBookRequest.bookInfo.authors) {
+  if (addBookRequest.book.authors) {
     properties["Author(s)"] = {
-      multi_select: addBookRequest.bookInfo.authors.map((author) => {
+      multi_select: addBookRequest.book.authors.map((author) => {
         if (author.includes(",")) {
           const authorsSplit = author.split(",");
           author = `${authorsSplit[1]} ${authorsSplit[0]}`;
@@ -221,23 +221,23 @@ function generateCreatePageProperties(
     };
   }
 
-  if (addBookRequest.bookInfo.subtitle) {
+  if (addBookRequest.book.subtitle) {
     properties["Subtitle"] = {
-      rich_text: [{ text: { content: addBookRequest.bookInfo.subtitle } }],
+      rich_text: [{ text: { content: addBookRequest.book.subtitle } }],
     };
   }
 
-  if (addBookRequest.bookInfo.genres) {
+  if (addBookRequest.book.genres) {
     properties["Genre(s)"] = {
-      multi_select: addBookRequest.bookInfo.genres.map((genre) => {
+      multi_select: addBookRequest.book.genres.map((genre) => {
         return { name: genre };
       }),
     };
   }
 
-  if (addBookRequest.bookInfo.year) {
+  if (addBookRequest.book.year) {
     properties["Year"] = {
-      rich_text: [{ text: { content: addBookRequest.bookInfo.year } }],
+      rich_text: [{ text: { content: addBookRequest.book.year } }],
     };
   }
 

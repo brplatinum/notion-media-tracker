@@ -1,4 +1,4 @@
-import { BookInfo } from "@backend/types/books-api";
+import { components } from "@backend/types/api";
 import { Input } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
@@ -12,7 +12,9 @@ import {
 import { MediaInfo } from "../types/util";
 import SearchResult from "./SearchResult";
 
-const convertBookInfoToMediaInfo = (bookInfo: BookInfo): MediaInfo => {
+type Book = components["schemas"]["Book"];
+
+const convertBookInfoToMediaInfo = (bookInfo: Book): MediaInfo => {
   return {
     title: bookInfo.title,
     subtitle: bookInfo.subtitle,
@@ -24,7 +26,7 @@ const convertBookInfoToMediaInfo = (bookInfo: BookInfo): MediaInfo => {
   };
 };
 
-const convertMediaInfoToBookInfo = (mediaInfo: MediaInfo): BookInfo => {
+const convertMediaInfoToBookInfo = (mediaInfo: MediaInfo): Book => {
   return {
     title: mediaInfo.title,
     subtitle: mediaInfo.subtitle,
@@ -38,7 +40,7 @@ const convertMediaInfoToBookInfo = (mediaInfo: MediaInfo): BookInfo => {
 
 const BookSearch = () => {
   const [inputValue, setInputValue] = useState("");
-  const [retrievedBooks, setRetrievedBooks] = useState<BookInfo[]>([]);
+  const [retrievedBooks, setRetrievedBooks] = useState<Book[]>([]);
 
   const handleSearchClick = async () => {
     const books = await searchBooks(inputValue);
