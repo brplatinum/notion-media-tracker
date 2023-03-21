@@ -1,0 +1,60 @@
+openapi: "3.0.3"
+info:
+  title: Notion Media Tracker API
+  version: "1.0"
+servers:
+  - url: "{server}/api"
+components:
+  schemas:
+    Book:
+      type: array
+      properties:
+        title:
+          type: string
+          example: Book Title
+        subtitle:
+          type: string
+          example: Book Subtitle
+        authors:
+          type: array
+          items:
+            type: string
+          example: [John Johnson, James Jameson]
+        imgSrc:
+          type: string
+          example: https://example.com/example.png
+        genres:
+          type: array
+          items:
+            type: string
+          example: [Fantasy, Drama]
+        ids:
+          type: array
+          items:
+            type: string
+          example: [isbn:101, google:2000]
+        year:
+          type: string
+          example: 2012
+      required:
+        - title
+        - ids
+    BookResults:
+      type: array
+      items:
+        $ref: "#/components/schemas/Book"
+paths:
+  /books/search:
+    get:
+      parameters:
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResults"
