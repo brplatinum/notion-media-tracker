@@ -20,7 +20,7 @@ export const addMovieToNotion = async (movieInfo: Movie) => {
   await fetch(`${backendUrl}/movies/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ movie: movieInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -30,7 +30,7 @@ export const addNextMovieToNotion = async (movieInfo: Movie) => {
   await fetch(`${backendUrl}/movies/watch-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ movie: movieInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -43,7 +43,7 @@ export const addFinishedMovieToNotion = async (
   await fetch(`${backendUrl}/movies/finished`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo, rating: (rating * 2).toString() }),
+    body: JSON.stringify({ movie: movieInfo, rating: (rating * 2).toString() }),
   });
 
   return CallStatus.SUCCESS;
@@ -53,7 +53,7 @@ export const addCurrentMovieToNotion = async (movieInfo: Movie) => {
   await fetch(`${backendUrl}/movies/currently-watching`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ movieInfo }),
+    body: JSON.stringify({ movie: movieInfo }),
   });
 
   return CallStatus.SUCCESS;

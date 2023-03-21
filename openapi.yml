@@ -3,7 +3,7 @@ info:
   title: Notion Media Tracker API
   version: "1.0"
 servers:
-  - url: "{server}/api"
+  - url: "{server}"
 components:
   schemas:
     Book:

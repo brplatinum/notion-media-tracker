@@ -20,7 +20,7 @@ export const addBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ book: bookInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -30,7 +30,7 @@ export const addNextBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/read-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ book: bookInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -43,7 +43,7 @@ export const addFinishedBookToNotion = async (
   await fetch(`${backendUrl}/books/finished`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo, rating: (rating * 2).toString() }),
+    body: JSON.stringify({ book: bookInfo, rating: (rating * 2).toString() }),
   });
 
   return CallStatus.SUCCESS;
@@ -53,7 +53,7 @@ export const addCurrentBookToNotion = async (bookInfo: Book) => {
   await fetch(`${backendUrl}/books/currently-reading`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookInfo }),
+    body: JSON.stringify({ book: bookInfo }),
   });
 
   return CallStatus.SUCCESS;

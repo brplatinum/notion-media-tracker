@@ -20,7 +20,7 @@ export const addTvToNotion = async (tvInfo: TvShow) => {
   await fetch(`${backendUrl}/tv/add-to-shelf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tvInfo }),
+    body: JSON.stringify({ tvShow: tvInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -30,7 +30,7 @@ export const addNextTvToNotion = async (tvInfo: TvShow) => {
   await fetch(`${backendUrl}/tv/watch-next`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tvInfo }),
+    body: JSON.stringify({ tvShow: tvInfo }),
   });
 
   return CallStatus.SUCCESS;
@@ -40,7 +40,7 @@ export const addFinishedTvToNotion = async (tvInfo: TvShow, rating: number) => {
   await fetch(`${backendUrl}/tv/finished`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tvInfo, rating: (rating * 2).toString() }),
+    body: JSON.stringify({ tvShow: tvInfo, rating: (rating * 2).toString() }),
   });
 
   return CallStatus.SUCCESS;
@@ -50,7 +50,7 @@ export const addCurrentTvToNotion = async (tvInfo: TvShow) => {
   await fetch(`${backendUrl}/tv/currently-watching`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tvInfo }),
+    body: JSON.stringify({ tvShow: tvInfo }),
   });
 
   return CallStatus.SUCCESS;
