@@ -27,9 +27,19 @@ app.use(
   })
 );
 
-app.use("/books", booksRouter);
-app.use("/movies", moviesRouter);
-app.use("/tv", tvRouter);
+// Get keys from file
+const getKeys = (req: Request, res: Response, next: NextFunction) => {
+  if (fs.existsSync(keyfilePath)) {
+    const data = fs.readFileSync(keyfilePath);
+    const keyfileData = JSON.parse(data.toString()) as KeyfileData;
+    req.keyfileData = keyfileData;
+  }
+  next();
+};
+
+app.use("/books", getKeys, booksRouter);
+app.use("/movies", getKeys, moviesRouter);
+app.use("/tv", getKeys, tvRouter);
 
 app.get("/setup", async (req, res) => {
   const keysNeededResponse: KeysNeededResponse = { keysNeeded: [] };

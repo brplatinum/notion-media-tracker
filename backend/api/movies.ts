@@ -13,16 +13,13 @@ type AddMovieRequest = components["schemas"]["AddMovieRequest"];
 type FinishedMovieRequest = components["schemas"]["FinishedMovieRequest"];
 
 const router = express.Router();
-const notion = new Client({
-  auth: process.env.NOTION_INTEGRATION_TOKEN,
-});
 
 router.get("/search", async (req, res) => {
   const response = await fetch(
     `https://api.themoviedb.org/3/search/movie?query=${req.query.search_query}`,
     {
       method: "GET",
-      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+      headers: { Authorization: `Bearer ${req.keyfileData?.tmdbToken}` },
     }
   );
 
@@ -36,7 +33,9 @@ router.get("/search", async (req, res) => {
           `https://api.themoviedb.org/3/movie/${movieItem.id}/credits`,
           {
             method: "GET",
-            headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+            headers: {
+              Authorization: `Bearer ${req.keyfileData?.tmdbToken}`,
+            },
           }
         )
       ).json()) as TmdbMovieCredits;
@@ -69,6 +68,10 @@ router.get("/search", async (req, res) => {
 });
 
 router.post("/add-to-shelf", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
+
   const addMovieRequest = req.body as AddMovieRequest;
 
   const movieId = addMovieRequest.movie.ids[0].split(":")[1];
@@ -76,7 +79,7 @@ router.post("/add-to-shelf", async (req, res) => {
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       method: "GET",
-      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+      headers: { Authorization: `Bearer ${req.keyfileData?.tmdbToken}` },
     }
   );
 
@@ -108,7 +111,7 @@ router.post("/add-to-shelf", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -125,6 +128,9 @@ router.post("/add-to-shelf", async (req, res) => {
 });
 
 router.post("/watch-next", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
   const addMovieRequest = req.body as AddMovieRequest;
 
   const movieId = addMovieRequest.movie.ids[0].split(":")[1];
@@ -132,7 +138,7 @@ router.post("/watch-next", async (req, res) => {
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       method: "GET",
-      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+      headers: { Authorization: `Bearer ${req.keyfileData?.tmdbToken}` },
     }
   );
 
@@ -164,7 +170,7 @@ router.post("/watch-next", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -181,6 +187,9 @@ router.post("/watch-next", async (req, res) => {
 });
 
 router.post("/finished", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
   const finishedMovieRequest = req.body as FinishedMovieRequest;
 
   const movieId = finishedMovieRequest.movie.ids[0].split(":")[1];
@@ -188,7 +197,7 @@ router.post("/finished", async (req, res) => {
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       method: "GET",
-      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+      headers: { Authorization: `Bearer ${req.keyfileData?.tmdbToken}` },
     }
   );
 
@@ -232,7 +241,7 @@ router.post("/finished", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -249,6 +258,9 @@ router.post("/finished", async (req, res) => {
 });
 
 router.post("/currently-watching", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
   const addMovieRequest = req.body as AddMovieRequest;
 
   const movieId = addMovieRequest.movie.ids[0].split(":")[1];
@@ -256,7 +268,7 @@ router.post("/currently-watching", async (req, res) => {
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       method: "GET",
-      headers: { Authorization: `Bearer ${process.env.TMDB_TOKEN}` },
+      headers: { Authorization: `Bearer ${req.keyfileData?.tmdbToken}` },
     }
   );
 
@@ -294,7 +306,7 @@ router.post("/currently-watching", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 

@@ -9,9 +9,6 @@ type AddBookRequest = components["schemas"]["AddBookRequest"];
 type FinishedBookRequest = components["schemas"]["FinishedBookRequest"];
 
 const router = express.Router();
-const notion = new Client({
-  auth: process.env.NOTION_INTEGRATION_TOKEN,
-});
 
 router.get("/search", async (req, res) => {
   const response = await fetch(
@@ -51,6 +48,9 @@ router.get("/search", async (req, res) => {
 });
 
 router.post("/add-to-shelf", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
   const addBookRequest = req.body as AddBookRequest;
   const properties = generateCreatePageProperties(addBookRequest);
 
@@ -61,7 +61,7 @@ router.post("/add-to-shelf", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -78,6 +78,10 @@ router.post("/add-to-shelf", async (req, res) => {
 });
 
 router.post("/read-next", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
+
   const addBookRequest = req.body as AddBookRequest;
   const properties = generateCreatePageProperties(addBookRequest);
 
@@ -88,7 +92,7 @@ router.post("/read-next", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -105,6 +109,10 @@ router.post("/read-next", async (req, res) => {
 });
 
 router.post("/finished", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
+
   const finishedBookRequest = req.body as FinishedBookRequest;
   const properties = generateCreatePageProperties(finishedBookRequest);
 
@@ -127,7 +135,7 @@ router.post("/finished", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
@@ -144,6 +152,10 @@ router.post("/finished", async (req, res) => {
 });
 
 router.post("/currently-reading", async (req, res) => {
+  const notion = new Client({
+    auth: req.keyfileData?.notionIntegrationToken ?? "",
+  });
+
   const finishedBookRequest = req.body as AddBookRequest;
   const properties = generateCreatePageProperties(finishedBookRequest);
 
@@ -160,7 +172,7 @@ router.post("/currently-reading", async (req, res) => {
   };
 
   const createPageParameters: CreatePageParameters = {
-    parent: { database_id: process.env.NOTION_DATABASE_ID || "" },
+    parent: { database_id: req.keyfileData?.notionDatabaseId || "" },
     properties,
   };
 
