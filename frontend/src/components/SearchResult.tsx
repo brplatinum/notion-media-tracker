@@ -1,5 +1,6 @@
 import { Image, Text } from "@mantine/core";
 import { MediaInfo } from "../types/util";
+import "./SearchResult.css";
 import SearchResultButtons from "./SearchResultButtons";
 
 const formatPeople = (people: string[]) => {
@@ -49,26 +50,31 @@ const SearchResult = ({
   }
 
   return (
-    <div className="SearchResult">
-      <Image
-        width={120}
-        radius="md"
-        src={mediaInfo.imgSrc}
-        fit="contain"
-        withPlaceholder
-      />
-      <Text fz="xl">
-        {showYearInTitle && mediaInfo.year
-          ? `${mediaInfo.title} (${mediaInfo.year})`
-          : mediaInfo.title}
-      </Text>
-      <Text fz="md">{mediaInfo.subtitle}</Text>
-      {mediaInfo.creators?.length ? (
-        <Text fz="lg">by {formatPeople(mediaInfo.creators)}</Text>
-      ) : null}
-      {mediaInfo.starring?.length ? (
-        <Text fz="lg">starring {formatPeople(mediaInfo.starring)}</Text>
-      ) : null}
+    <div className="searchResult">
+      <div className="imageInfoFlex">
+        <Image
+          width={120}
+          radius="md"
+          src={mediaInfo.imgSrc}
+          fit="contain"
+          withPlaceholder
+          className="coverImage"
+        />
+        <div className="mediaInfo">
+          <Text fz="xl">
+            {showYearInTitle && mediaInfo.year
+              ? `${mediaInfo.title} (${mediaInfo.year})`
+              : mediaInfo.title}
+          </Text>
+          <Text fz="md">{mediaInfo.subtitle}</Text>
+          {mediaInfo.creators?.length ? (
+            <Text fz="lg">by {formatPeople(mediaInfo.creators)}</Text>
+          ) : null}
+          {mediaInfo.starring?.length ? (
+            <Text fz="lg">starring {formatPeople(mediaInfo.starring)}</Text>
+          ) : null}
+        </div>
+      </div>
       <SearchResultButtons
         nextText="Read next"
         currentlyText="Currently reading"
