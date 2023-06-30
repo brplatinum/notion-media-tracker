@@ -19,13 +19,23 @@ const keyfilePath = configDirectory + "/keyfile.json";
 type KeysNeededResponse = components["schemas"]["KeysNeeded"];
 type KeySubmissionRequest = components["schemas"]["KeySubmission"];
 
+app.use(express.static("dist"));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+});
+
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-    optionsSuccessStatus: 200,
-  })
-);
+
+if (process.env.DEV) {
+  console.log("dev");
+  app.use(
+    cors({
+      origin: "*",
+      optionsSuccessStatus: 200,
+    })
+  );
+}
 
 // Get keys from file
 const getKeys = (req: Request, res: Response, next: NextFunction) => {
