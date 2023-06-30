@@ -11,18 +11,10 @@ const app = express();
 const __dirname = path.resolve();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  OpenApiValidator.middleware({
-    apiSpec: "./openapi.yml",
-    validateRequests: true,
-    validateResponses: true,
-  })
-);
-
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS || "*",
+    origin: "*",
     optionsSuccessStatus: 200,
   })
 );
@@ -30,6 +22,14 @@ app.use(
 app.use("/books", booksRouter);
 app.use("/movies", moviesRouter);
 app.use("/tv", tvRouter);
+
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: "./openapi.yml",
+    validateRequests: true,
+    validateResponses: true,
+  })
+);
 
 app.use(
   (

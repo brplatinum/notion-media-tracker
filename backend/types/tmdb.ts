@@ -1,4 +1,4 @@
-export interface TmdbMovie {
+export type TmdbMovie = {
   adult: boolean;
   backdrop_path?: string;
   belongs_to_collection?: object;
@@ -29,9 +29,9 @@ export interface TmdbMovie {
   video: boolean;
   vote_average: number;
   vote_count: number;
-}
+};
 
-export interface TmdbTv {
+export type TmdbTv = {
   backdrop_path?: string;
   created_by: {
     id: number;
@@ -99,9 +99,9 @@ export interface TmdbTv {
   type: string;
   vote_average: number;
   vote_count: number;
-}
+};
 
-export interface TmdbMovieSearchResult {
+export type TmdbMovieSearchResult = {
   poster_path?: string;
   adult: boolean;
   overview: string;
@@ -116,9 +116,9 @@ export interface TmdbMovieSearchResult {
   vote_count: number;
   video: boolean;
   vote_average: number;
-}
+};
 
-export interface TmdbTvSearchResult {
+export type TmdbTvSearchResult = {
   poster_path?: string;
   popularity: number;
   id: number;
@@ -132,29 +132,29 @@ export interface TmdbTvSearchResult {
   vote_count: number;
   name: string;
   original_name: string;
-}
+};
 
-export interface TmdbMovieSearch {
+export type TmdbMovieSearch = {
   page: number;
   results: TmdbMovieSearchResult[];
   totalResults: number;
   total_pages: number;
-}
+};
 
-export interface TmdbTvSearch {
+export type TmdbTvSearch = {
   page: number;
   results: TmdbTvSearchResult[];
   totalResults: number;
   total_pages: number;
-}
+};
 
-export interface TmdbMovieCredits {
+export type TmdbMovieCredits = {
   id: number;
   cast: TmdbMovieCast[];
   crew: TmdbMovieCrew[];
-}
+};
 
-export interface TmdbMovieCrew {
+export type TmdbMovieCrew = {
   adult: boolean;
   gender?: number;
   id: number;
@@ -166,9 +166,9 @@ export interface TmdbMovieCrew {
   credit_id: string;
   department: string;
   job: string;
-}
+};
 
-export interface TmdbMovieCast {
+export type TmdbMovieCast = {
   adult: boolean;
   gender?: number;
   id: number;
@@ -181,15 +181,15 @@ export interface TmdbMovieCast {
   character: string;
   credit_id: string;
   order: number;
-}
+};
 
-export interface TmdbTvAggregateCredits {
+export type TmdbTvAggregateCredits = {
   id: number;
   cast: TmdbAggregateTvCast[];
   crew: TmdbAggregateTvCrew[];
-}
+};
 
-export interface TmdbAggregateTvCrew {
+export type TmdbAggregateTvCrew = {
   adult: boolean;
   gender?: number;
   id: number;
@@ -201,9 +201,9 @@ export interface TmdbAggregateTvCrew {
   jobs: { credit_id: string; job: string; episode_count: string }[];
   department: string;
   total_episode_count: number;
-}
+};
 
-export interface TmdbAggregateTvCast {
+export type TmdbAggregateTvCast = {
   adult: boolean;
   gender?: number;
   id: number;
@@ -215,9 +215,9 @@ export interface TmdbAggregateTvCast {
   roles: { credit_id: string; character: string; episode_count: string }[];
   total_episode_count: number;
   order: number;
-}
+};
 
-export interface TmdbTvExternalCredits {
+export type TmdbTvExternalCredits = {
   imdb_id?: string;
   freebase_mid?: string;
   freebase_id?: string;
@@ -227,4 +227,4 @@ export interface TmdbTvExternalCredits {
   instagram_id?: string;
   twitter_id?: string;
   id: number;
-}
+};

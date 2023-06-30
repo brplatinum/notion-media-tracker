@@ -13,8 +13,10 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="app">
       <SegmentedControl
+        className="media-type-segment"
+        fullWidth
         data={[
           { label: "Books", value: "books" },
           { label: "Movies", value: "movies" },

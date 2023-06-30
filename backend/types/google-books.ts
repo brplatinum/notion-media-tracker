@@ -1,12 +1,12 @@
-export interface GoogleBook {
+export type GoogleBook = {
   kind: string;
   id: string;
   etag: string;
   selfLink: string;
   volumeInfo: VolumeInfo;
-}
+};
 
-export interface VolumeInfo {
+export type VolumeInfo = {
   title: string;
   subtitle?: string;
   authors?: string[];
@@ -14,9 +14,9 @@ export interface VolumeInfo {
   categories?: string[];
   industryIdentifiers?: { type: string; identifier: string }[];
   publishedDate?: string;
-}
+};
 
-export interface ImageLinks {
+export type ImageLinks = {
   smallThumbnail: string;
   thumbnail: string;
-}
+};
