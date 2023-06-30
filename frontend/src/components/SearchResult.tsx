@@ -19,6 +19,8 @@ const formatPeople = (people: string[]) => {
 type SearchResultProps = {
   mediaInfo: MediaInfo;
   showYearInTitle?: boolean;
+  nextText: string;
+  currentlyText: string;
   onAddShelfClick: (mediaInfo: MediaInfo) => void;
   onAddNextClick: (mediaInfo: MediaInfo) => void;
   onRatingChange: (mediaInfo: MediaInfo, rating: number) => void;
@@ -28,6 +30,8 @@ type SearchResultProps = {
 const SearchResult = ({
   mediaInfo,
   showYearInTitle = false,
+  nextText,
+  currentlyText,
   onAddShelfClick,
   onAddNextClick,
   onRatingChange,
@@ -76,8 +80,8 @@ const SearchResult = ({
         </div>
       </div>
       <SearchResultButtons
-        nextText="Read next"
-        currentlyText="Currently reading"
+        nextText={nextText}
+        currentlyText={currentlyText}
         onAddShelfClick={handleAddShelfClick}
         onAddNextClick={handleAddNextClick}
         onRatingChange={handleRatingChange}

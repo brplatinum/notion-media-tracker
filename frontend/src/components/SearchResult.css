@@ -26,16 +26,20 @@
   display: flex;
 }
 
-button {
+.searchResultButton {
   flex: 1;
   margin-left: 3px;
   margin-right: 3px;
 }
 
-button:first-child {
+.searchResultButton:first-child {
   margin-left: 0px;
 }
 
-button:last-child {
+.searchResultButton:last-child {
   margin-right: 0px;
+}
+
+.ratingMenuItem {
+  margin: auto;
 }

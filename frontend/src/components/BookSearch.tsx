@@ -96,6 +96,8 @@ const BookSearch = () => {
           <SearchResult
             mediaInfo={convertBookInfoToMediaInfo(bookResult)}
             key={`${Math.random()}`}
+            nextText="Read next"
+            currentlyText="Currently reading"
             onAddShelfClick={handleAddShelfClick}
             onAddNextClick={handleAddNextClick}
             onRatingChange={handleRatingChange}

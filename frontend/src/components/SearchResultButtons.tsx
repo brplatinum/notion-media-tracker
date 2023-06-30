@@ -19,20 +19,47 @@ const SearchResultButtons = ({
 }: SearchResultButtonsProps) => {
   return (
     <div className="SearchResultButtons">
-      <Button onClick={onAddShelfClick}>Add to shelf</Button>
-      <Button onClick={onAddNextClick}>{nextText}</Button>
+      <Button
+        onClick={onAddShelfClick}
+        className="searchResultButton"
+        variant="outline"
+        compact
+      >
+        Add to shelf
+      </Button>
+      <Button
+        onClick={onAddNextClick}
+        className="searchResultButton"
+        variant="outline"
+        compact
+      >
+        {nextText}
+      </Button>
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <Button>Finished</Button>
+          <Button className="searchResultButton" variant="outline" compact>
+            Finished
+          </Button>
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label>Rating</Menu.Label>
           <Menu.Item>
-            <Rating fractions={2} onChange={onRatingChange} />
+            <Rating
+              className="ratingMenuItem"
+              fractions={2}
+              onChange={onRatingChange}
+            />
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Button onClick={onAddCurrentClick}>{currentlyText}</Button>
+      <Button
+        onClick={onAddCurrentClick}
+        className="searchResultButton"
+        variant="outline"
+        compact
+      >
+        {currentlyText}
+      </Button>
     </div>
   );
 };

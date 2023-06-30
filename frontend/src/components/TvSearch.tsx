@@ -95,6 +95,8 @@ const TvSearch = () => {
           <SearchResult
             mediaInfo={convertTvInfoToMediaInfo(tvResult)}
             key={`${Math.random()}`}
+            nextText="Watch next"
+            currentlyText="Currently watching"
             showYearInTitle
             onAddShelfClick={handleAddShelfClick}
             onAddNextClick={handleAddNextClick}
