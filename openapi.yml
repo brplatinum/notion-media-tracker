@@ -167,6 +167,17 @@ components:
               example: 5
           required:
             - rating
+    KeysNeeded:
+      type: object
+      properties:
+        keysNeeded:
+          type: array
+          items:
+            type: string
+            enum:
+              - NOTION_INTEGRATION_TOKEN
+              - NOTION_DATABASE_ID
+              - TMDB_TOKEN
 paths:
   /books/search:
     get:
@@ -342,3 +353,12 @@ paths:
       responses:
         "201":
           description: Created
+  /setup:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeysNeeded"

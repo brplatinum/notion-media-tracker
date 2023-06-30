@@ -212,6 +212,18 @@ export interface paths {
       };
     };
   };
+  "/setup-status": {
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["KeysNeeded"];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -337,6 +349,9 @@ export interface components {
     FinishedTvShowRequest: components["schemas"]["AddTvShowRequest"] & {
       /** @example 5 */
       rating: string;
+    };
+    KeysNeeded: {
+      keysNeeded?: ("NOTION_INTEGRATION_TOKEN" | "NOTION_DATABASE_ID" | "TMDB_TOKEN")[];
     };
   };
   responses: never;
