@@ -178,6 +178,18 @@ components:
               - NOTION_INTEGRATION_TOKEN
               - NOTION_DATABASE_ID
               - TMDB_TOKEN
+    KeySubmission:
+      type: object
+      properties:
+        notionIntegrationToken:
+          type: string
+          nullable: true
+        notionDatabaseId:
+          type: string
+          nullable: true
+        tmdbToken:
+          type: string
+          nullable: true
 paths:
   /books/search:
     get:
@@ -355,6 +367,20 @@ paths:
           description: Created
   /setup:
     get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeysNeeded"
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeySubmission"
       responses:
         "200":
           description: OK

@@ -13,9 +13,11 @@ import { KeyfileData } from "./types/server.js";
 const app = express();
 const __dirname = path.resolve();
 const PORT = process.env.PORT || 3000;
-const keyfilePath = "../config/keyfile.json";
+const configDirectory = "./config";
+const keyfilePath = configDirectory + "/keyfile.json";
 
 type KeysNeededResponse = components["schemas"]["KeysNeeded"];
+type KeySubmissionRequest = components["schemas"]["KeySubmission"];
 
 app.use(express.json());
 app.use(
@@ -32,6 +34,7 @@ app.use("/tv", tvRouter);
 app.get("/setup", async (req, res) => {
   const keysNeededResponse: KeysNeededResponse = { keysNeeded: [] };
   if (fs.existsSync(keyfilePath)) {
+    console.log("Path exists");
     fs.readFile(keyfilePath, (err, data) => {
       if (err) {
         res.sendStatus(500);
@@ -53,6 +56,10 @@ app.get("/setup", async (req, res) => {
       res.status(200).json(keysNeededResponse);
     });
   } else {
+    console.log("Path doesn't exist");
+    if (!fs.existsSync(configDirectory)) {
+      fs.mkdirSync(configDirectory);
+    }
     const keyfileData: KeyfileData = {
       notionIntegrationToken: null,
       notionDatabaseId: null,
@@ -65,10 +72,66 @@ app.get("/setup", async (req, res) => {
         throw err;
       } else {
         console.log("Successfully wrote to file: " + keyfilePath);
-        res.send(200).json(keysNeededResponse);
+        res.status(200).json(keysNeededResponse);
       }
     });
   }
+});
+
+app.post("/setup", async (req, res) => {
+  const keySubmission = req.body as KeySubmissionRequest;
+  const keysNeededResponse: KeysNeededResponse = { keysNeeded: [] };
+  if (!fs.existsSync(keyfilePath)) {
+    if (!fs.existsSync(configDirectory)) {
+      fs.mkdirSync(configDirectory);
+    }
+    const keyfileData: KeyfileData = {
+      notionIntegrationToken: null,
+      notionDatabaseId: null,
+      tmdbToken: null,
+    };
+    fs.writeFileSync(keyfilePath, JSON.stringify(keyfileData));
+  }
+
+  fs.readFile(keyfilePath, (err, data) => {
+    if (err) {
+      res.sendStatus(500);
+      console.log("Failed to read file: " + keyfilePath);
+      throw err;
+    }
+    const keyfileData = JSON.parse(data.toString()) as KeyfileData;
+
+    keySubmission.notionDatabaseId != null
+      ? (keyfileData.notionDatabaseId = keySubmission.notionDatabaseId)
+      : null;
+    keySubmission.notionIntegrationToken != null
+      ? (keyfileData.notionIntegrationToken =
+          keySubmission.notionIntegrationToken)
+      : null;
+    keySubmission.tmdbToken != null
+      ? (keyfileData.tmdbToken = keySubmission.tmdbToken)
+      : null;
+
+    fs.writeFile(keyfilePath, JSON.stringify(keyfileData), (err) => {
+      if (err) {
+        res.sendStatus(500);
+        console.log("Failed to write file: " + keyfilePath);
+        throw err;
+      }
+      console.log("Successfully wrote to file: " + keyfilePath);
+      !keyfileData.notionIntegrationToken
+        ? keysNeededResponse.keysNeeded?.push("NOTION_INTEGRATION_TOKEN")
+        : null;
+      !keyfileData.notionDatabaseId
+        ? keysNeededResponse.keysNeeded?.push("NOTION_DATABASE_ID")
+        : null;
+      !keyfileData.tmdbToken
+        ? keysNeededResponse.keysNeeded?.push("TMDB_TOKEN")
+        : null;
+    });
+
+    res.status(200).json(keysNeededResponse);
+  });
 });
 
 app.use(

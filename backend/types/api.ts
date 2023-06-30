@@ -212,8 +212,23 @@ export interface paths {
       };
     };
   };
-  "/setup-status": {
+  "/setup": {
     get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["KeysNeeded"];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["KeySubmission"];
+        };
+      };
       responses: {
         /** @description OK */
         200: {
@@ -352,6 +367,11 @@ export interface components {
     };
     KeysNeeded: {
       keysNeeded?: ("NOTION_INTEGRATION_TOKEN" | "NOTION_DATABASE_ID" | "TMDB_TOKEN")[];
+    };
+    KeySubmission: {
+      notionIntegrationToken?: string | null;
+      notionDatabaseId?: string | null;
+      tmdbToken?: string | null;
     };
   };
   responses: never;
